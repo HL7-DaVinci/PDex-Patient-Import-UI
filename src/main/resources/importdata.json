@@ -10,11 +10,11 @@
       "resource": {
         "identifier": [
           {
-            "system": "http://epic.com",
+            "system": "http://test.com",
             "value": "org-1"
           }
         ],
-        "name": "Epic",
+        "name": "Test",
         "resourceType": "Organization",
         "type": [
           {
@@ -52,7 +52,7 @@
         "gender": "male",
         "identifier": [
           {
-            "system": "http://epic.com",
+            "system": "http://test.com",
             "type": {
               "coding": [
                 {
