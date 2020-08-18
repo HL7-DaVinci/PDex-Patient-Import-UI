@@ -22,4 +22,5 @@ Run app with
 java -jar target/patient-ui-1.0-SNAPSHOT.jar
 ```
 Go to http://localhost:8080
+
 Credentials: user/user
