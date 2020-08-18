@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthLX FHIR demo app</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/locale/en.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/theme-chalk/index.css">
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0;
+        }
+
+        .el-header {
+            border-bottom: 1px solid #ccc;
+            background: #fafafa;
+        }
+
+        .el-header .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .el-header img {
+            margin-top: 7px;
+        }
+
+        #app {
+            min-height: 100vh;
+        }
+
+        h2 {
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .login-button {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .el-card {
+            width: 350px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <el-container id="app">
+        <el-header height="80px">
+            <div class="header-wrapper">
+                <img src="da-vinci-logo.png" alt="Da Vinci Logo">
+                <img src="healthlx-logo.png" alt="HealthLX Logo">
+            </div>
+        </el-header>
+
+        <el-main>
+            <Login />
+        </el-main>
+    </el-container>
+
+    <script type="text/x-template" id="login-template">
+        <el-card>
+            <h2>Login</h2>
+            <el-form
+                class="login-form"
+                :model="form"
+                ref="form"
+                @submit="login"
+                method="post"
+                action="/login.html"
+            >
+                <el-form-item
+                    prop="username"
+                    :required="true"
+                >
+                    <el-input
+                        v-model="form.username"
+                        placeholder="Username"
+                        prefix-icon="el-icon-user"
+                        name="username"
+                        :autofocus="true"
+                    />
+                </el-form-item>
+
+                <el-form-item
+                    prop="password"
+                    :required="true"
+                >
+                    <el-input
+                        v-model="form.password"
+                        placeholder="Password"
+                        type="password"
+                        prefix-icon="el-icon-lock"
+                        name="password"
+                    />
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button
+                        :loading="loading"
+                        class="login-button"
+                        type="primary"
+                        native-type="submit"
+                    >
+                        Login
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </el-card>
+    </script>
+
+    <script type="text/javascript">
+        const Login = Vue.component("Login", {
+            template: "#login-template",
+            data() {
+                return {
+                    form: {
+                        username: "",
+                        password: ""
+                    },
+                    loading: false
+                };
+            },
+            methods: {
+                async login() {
+                    const valid = await this.$refs.form.validate();
+
+                    if (!valid) {
+                    	return;
+                    }
+                    this.loading = true;
+                }
+            }
+        });
+
+        ELEMENT.locale(ELEMENT.lang.en);
+        new Vue({ el: "#app" });
+    </script>
+</body>
+</html>
