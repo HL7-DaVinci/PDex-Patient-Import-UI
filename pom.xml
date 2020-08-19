@@ -34,54 +34,16 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jersey</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
-    <!--dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency-->
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-spring-boot-starter</artifactId>
       <version>${hapi_version}</version>
     </dependency>
     <dependency>
-      <groupId>ca.uhn.hapi.fhir</groupId>
-      <artifactId>hapi-fhir-jpaserver-base</artifactId>
-      <version>${hapi_version}</version>
-    </dependency>
-    <dependency>
-      <groupId>ca.uhn.hapi.fhir</groupId>
-      <artifactId>hapi-fhir-jaxrsserver-base</artifactId>
-      <version>${hapi_version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-    </dependency>
-    <!-- Optional -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <!-- Test -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -91,12 +53,12 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <executions>
-            <execution>
-              <goals>
-                <goal>repackage</goal>
-              </goals>
-            </execution>
-          </executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
