@@ -17,7 +17,7 @@ This project is dependent on a module from https://github.com/HL7-DaVinci/PDex-P
 ```sh
 ./gradlew clean build publishToMavenLocal
 ```
-This will publish all required dependencies to your local Maven repository and make them avialable for this project.
+This will publish all required dependencies to your local Maven repository and make them avialable for this project. Do this step only when something has changed in Patient Import App RI.
 After that go to PDex Patient Import UI project and run:
 ```sh
 mvn clean install
