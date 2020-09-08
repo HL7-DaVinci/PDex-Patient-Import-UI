@@ -13,6 +13,12 @@ Implementation is intended to prove the following functionality:
 5. Group data by Encounter.
 
 # Build
+This projecti is dependent on a module from https://github.com/HL7-DaVinci/PDex-Patient-Import-App Reference Implementation. Check out sources and run the following command from root:
+```sh
+./gradlew clean build publishToMavenLocal
+```
+This will publish all required dependencies to your local Maven repository and make them avialable for this project.
+After that run the following command from PDex Patient Import UI project root:
 ```sh
 mvn clean install
 ```
