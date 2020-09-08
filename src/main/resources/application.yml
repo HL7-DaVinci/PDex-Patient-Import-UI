@@ -17,9 +17,10 @@ spring:
     allow-bean-definition-overriding: true
   h2:
     console:
-      enabled: true
+      enabled: false
   datasource:
     url: jdbc:h2:mem:testdb
+    # url: jdbc:h2:mem:testdb
   batch:
     job:
       enabled: false
@@ -46,10 +47,43 @@ management:
   security:
     enabled: false
 
-#Payer A
-payer-a:
-  auth-uri: https://auth.logicahealth.org/authorize
-  fhir-server-uri: https://api.logicahealth.org/DaVinciPDexProvider/data
-  client-id: ffb52a99-499c-4974-a1a6-bbf584469b32
-  system: https://api.logicahealth.org
-  redirect-uri: http://localhost:8080/importhistory
+app:
+  redirect-uri: http://localhost:8080/auth
+  npi.system: http://hl7.org/fhir/sid/us-npi
+  payers:
+    list:
+      - name: Diamond Health
+        auth-uri: https://auth.logicahealth.org/authorize
+        token-uri: https://auth.logicahealth.org/token
+        fhir-server-uri: https://api.logicahealth.org/DaVinciPDexProvider/data
+        client-id: 7ae69b73-34ab-446f-b3dc-6dc958794576
+        exclude-resources:
+        scope: launch/patient patient/*.read
+      - name: New Way Insurance
+        auth-uri: https://auth.logicahealth.org/authorize
+        token-uri: https://auth.logicahealth.org/token
+        fhir-server-uri: https://api.logicahealth.org/DaVinciPDexProvider/data
+        client-id: 7ae69b73-34ab-446f-b3dc-6dc958794576
+        exclude-resources: MedicationDispense
+        scope: launch/patient patient/*.read
+      - name: Premium
+        auth-uri: https://auth.logicahealth.org/authorize
+        token-uri: https://auth.logicahealth.org/token
+        fhir-server-uri: https://api.logicahealth.org/DaVinciPDexProvider/data
+        client-id: 7ae69b73-34ab-446f-b3dc-6dc958794576
+        exclude-resources: MedicationDispense
+        scope: launch/patient patient/*.read
+      - name: Public Insurance
+        auth-uri: https://auth.logicahealth.org/authorize
+        token-uri: https://auth.logicahealth.org/token
+        fhir-server-uri: https://api.logicahealth.org/DaVinciPDexProvider/data
+        client-id: 7ae69b73-34ab-446f-b3dc-6dc958794576
+        exclude-resources: MedicationDispense
+        scope: launch/patient patient/*.read
+      - name: Insurre
+        auth-uri: https://auth.logicahealth.org/authorize
+        token-uri: https://auth.logicahealth.org/token
+        fhir-server-uri: https://api.logicahealth.org/DaVinciPDexProvider/data
+        client-id: 7ae69b73-34ab-446f-b3dc-6dc958794576
+        exclude-resources: MedicationDispense
+        scope: launch/patient patient/*.read
