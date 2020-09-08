@@ -1,85 +1,72 @@
 export default {
 	name: "PatientInfo",
 	template: `
-		<el-card class="patient-info">
-			<div
-				slot="header"
-				class="patient-name"
-			>
-				{{ fullName }}
-			</div>
-			<el-row class="patient-info-data">
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+		<b-card class="mb-2 patient-info-card" v-bind:header="fullName">
+			<b-row class="patient-info-field">
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Gender</div>
-					<div>{{ gender }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Gender</div>
+					<div class="patient-info-field">{{ gender }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">DOB</div>
-					<div>{{ birthDate }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">DOB</div>
+					<div class="patient-info-field">{{ birthDate }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Email</div>
-					<div>{{ email }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Email</div>
+					<div class="patient-info-field">{{ email }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Phone</div>
-					<div>{{ phone }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Phone</div>
+					<div class="patient-info-field">{{ phone }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Address</div>
-					<div>{{ address }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Address</div>
+					<div class="patient-info-field">{{ address }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">ID</div>
-					<div>{{ id }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">ID</div>
+					<div class="patient-info-field">{{ id }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="12"
+					md="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">MRN</div>
-					<div>{{ mrn }}</div>
-				</el-col>
-			</el-row>
-		</el-card>
+					<div class="text-muted patient-info-label">MRN</div>
+					<div class="patient-info-field">{{ mrn }}</div>
+				</b-col>
+			</b-row>
+		</b-card>
 	`,
 	props: ["data"],
 	computed: {
