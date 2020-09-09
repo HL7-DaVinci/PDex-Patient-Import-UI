@@ -13,7 +13,7 @@ export default {
 			>
 				<b-tabs
 					content-class="mt-3"
-					v-model="selectedResource"
+					v-model="tabIndex"
 					pills
 					fill
 				>
@@ -22,7 +22,6 @@ export default {
 						name="observation"
 						@click="handleResourceChange('observation', 0)"
 						:lazy="true"
-						active="isActive(0)"
 						:title-link-class="linkClass(0)"
 					>
 						<el-table
@@ -64,7 +63,6 @@ export default {
 						name="condition"
 						@click="handleResourceChange('condition', 1)"
 						:lazy="true"
-						active="isActive(1)"
 						:title-link-class="linkClass(1)"
 					>
 						<el-table
@@ -116,7 +114,6 @@ export default {
 						name="encounter"
 						@click="handleResourceChange('encounter', 2)"
 						:lazy="true"
-						active="isActive(2)"
 						:title-link-class="linkClass(2)"
 					>
 						<el-table
@@ -160,7 +157,6 @@ export default {
 						name="medicationRequest"
 						@click="handleResourceChange('medicationRequest', 3)"
 						:lazy="true"
-						active="isActive(3)"
 						:title-link-class="linkClass(3)"
 					>
 						<el-table
@@ -202,7 +198,6 @@ export default {
 						name="immunization"
 						@click="handleResourceChange('immunization', 4)"
 						:lazy="true"
-						active="isActive(4)"
 						:title-link-class="linkClass(4)"
 					>
 						<el-table
@@ -236,7 +231,6 @@ export default {
 	data() {
 		return {
 			loading: false,
-			selectedResource: "observation",
 			patient: {},
 			encounters: [],
 			observations: [],
@@ -261,13 +255,6 @@ export default {
 				return ['bg-primary', 'text-light']
 			} else {
 				return ['bg-light', 'text-info']
-			}
-		},
-		isActive(idx) {
-			if (this.tabIndex === idx) {
-				return true
-			} else {
-				return false
 			}
 		},
 		loadPatient() {
