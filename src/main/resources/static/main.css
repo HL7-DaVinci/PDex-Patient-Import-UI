@@ -3,6 +3,24 @@ body {
     margin: 0;
 }
 
+.logo-img {
+    width: 120px;
+    height: auto;
+}
+
+.navbar {
+    justify-content: space-between !important;
+    width: 100%;
+}
+
+.center-button {
+    justify-content: space-around !important;
+}
+
+.card-container {
+    justify-content: space-evenly !important;
+}
+
 .el-header {
     border-bottom: 1px solid #ccc;
     background: #fafafa;
@@ -42,12 +60,12 @@ h3 {
 }
 
 .payer-delete-button {
-    top: 0;
-    right: 1px;
+    top: 10px;
+    right: 5px;
 }
 
 .payer-sync-button {
-    top: 30px;
+    top: 45px;
     right: 1px;
 }
 
@@ -55,15 +73,6 @@ h3 {
     position: absolute;
     padding: 6px !important;
     border: none;
-}
-
-.payer-card {
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.payer-card .payer-details-button {
-    width: 100%
 }
 
 .payer-card.add:hover {
@@ -108,20 +117,15 @@ h3 {
     background: none;
 }
 
-.patient-info {
-    margin-bottom: 20px;
-}
-
-.patient-info .el-card__header {
-    background-color: #f5f7fa;
-}
-
-.patient-name {
-    font-size: 20px;
+.patient-info-card {
+    width: 100%;
 }
 
 .patient-info-label {
-    color: #909399;
+    font-size: 9px;
+}
+
+.patient-info-field {
 }
 
 .patient-info-data {

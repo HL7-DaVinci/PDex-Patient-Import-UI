@@ -1,65 +1,49 @@
 export default {
 	name: "EncounterInfo",
 	template: `
-		<el-card class="patient-info">
-			<div
-				slot="header"
-				class="patient-name"
-			>
-				{{ classCode }}
-			</div>
-			<el-row class="patient-info-data">
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+		<<b-card class="mb-2 patient-info-card" v-bind:header="classCode">
+			<b-row class="patient-info-field">
+				<b-col
+					cols="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Period Start</div>
-					<div>{{ periodStart | dateTime }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Period Start</div>
+					<div class="patient-info-field">{{ periodStart | dateTime }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Period End</div>
-					<div>{{ periodEnd | dateTime }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Period End</div>
+					<div class="patient-info-field">{{ periodEnd | dateTime }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Reason Code</div>
-					<div>{{ reasonCode }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">Reason Code</div>
+					<div class="patient-info-field">{{ reasonCode }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">ID</div>
-					<div>{{ id }}</div>
-				</el-col>
+					<div class="text-muted patient-info-label">ID</div>
+					<div class="patient-info-field">{{ id }}</div>
+				</b-col>
 
-				<el-col
-					:lg="6"
-					:md="8"
-					:sm="12"
-					:xs="12"
+				<b-col
+					cols="6"
+					class="mb-1"
 				>
-					<div class="patient-info-label">Status</div>
-					<div>{{ status }}</div>
-				</el-col>
-			</el-row>
-		</el-card>
+					<div class="text-muted patient-info-label">Status</div>
+					<div class="patient-info-field">{{ status }}</div>
+				</b-col>
+			</b-row>
+		</b-card>
 	`,
 	props: ["data"],
 	computed: {

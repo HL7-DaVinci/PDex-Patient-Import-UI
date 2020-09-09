@@ -4,14 +4,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthLX FHIR demo app</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/locale/en.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/theme-chalk/index.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/index.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/locale/en.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" crossorigin></script>
+    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-vue/2.16.0/bootstrap-vue.min.js" crossorigin></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.2/theme-chalk/index.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"/>
     <style>
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             margin: 0;
+        }
+
+        .card-container {
+            justify-content: center !important;
+        }
+
+        .login-card {
+            max-width: 350px;
+        }
+
+        .logo-img {
+            width: 120px;
+            height: auto;
+        }
+
+        .navbar {
+            justify-content: space-between !important;
         }
 
         .el-header {
@@ -52,22 +75,24 @@
 </head>
 
 <body>
-    <el-container id="app">
-        <el-header height="80px">
-            <div class="header-wrapper">
-                <img src="assets/da-vinci-logo.png" alt="Da Vinci Logo">
-                <img src="assets/healthlx-logo.png" alt="HealthLX Logo">
-            </div>
-        </el-header>
+    <b-container fluid class="pl-0 pr-0" id="app">
+        <b-navbar type="light" variant="light" sticky="true" class="navbar">
+            <b-navbar-brand>
+                <b-img left src="assets/da-vinci-logo.png" class="d-inline-block align-top logo-img" alt="Da Vinci Logo">
+            </b-navbar-brand>
 
-        <el-main>
+            <b-navbar-brand>
+                <b-img right src="assets/healthlx-logo.png" class="d-inline-block align-top logo-img" alt="HealthLX Logo">
+            </b-navbar-brand>
+        </b-navbar>
+
+        <b-row class="m2-2 card-container">
             <Login />
-        </el-main>
-    </el-container>
+        </b-row>
+    </b-container>
 
     <script type="text/x-template" id="login-template">
-        <el-card>
-            <h2>Login</h2>
+        <b-card header="Login" class="mt-2 login-card">
             <el-form
                 class="login-form"
                 :model="form"
@@ -103,17 +128,17 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <el-button
+                    <b-button
                         :loading="loading"
                         class="login-button"
-                        type="primary"
-                        native-type="submit"
+                        variant="primary"
+                        type="submit"
                     >
                         Login
-                    </el-button>
+                    </b-button>
                 </el-form-item>
             </el-form>
-        </el-card>
+        </b-card>
     </script>
 
     <script type="text/javascript">

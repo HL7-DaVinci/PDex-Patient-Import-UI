@@ -6,6 +6,7 @@ Vue.filter("dateTime", val => val ? moment(val).format("YYYY-MM-DD HH:ss") : "")
 axios.defaults.headers.common["Cache-Control"] = "no-cache"; // to prevent caching of fhir resources
 ELEMENT.locale(ELEMENT.lang.en);
 Vue.use(VueRouter);
+Vue.use(BootstrapVue);
 
 const router = new VueRouter({
 	routes: [{
