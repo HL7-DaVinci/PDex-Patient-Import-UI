@@ -194,11 +194,188 @@ export default {
 					</b-tab>
 
 					<b-tab
-						title="Immunization"
-						name="immunization"
-						@click="handleResourceChange('immunization', 4)"
+						title="Medication Dispense"
+						name="medicationDispense"
+						@click="handleResourceChange('medicationDispense', 4)"
 						:lazy="true"
 						:title-link-class="linkClass(4)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="medicationDispenses"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column prop="resource.medicationCodeableConcept" min-width="240" label="Medication Code Display" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.medicationCodeableConcept && scope.row.resource.medicationCodeableConcept.text }}
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Medication Statement"
+						name="medicationStatement"
+						@click="handleResourceChange('medicationStatement', 5)"
+						:lazy="true"
+						:title-link-class="linkClass(5)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="medicationStatements"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column prop="resource.medicationCodeableConcept" min-width="240" label="Medication Code Display" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.medicationCodeableConcept && scope.row.resource.medicationCodeableConcept.text }}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Effective" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Taken" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Allergy Intolerance"
+						name="allergyIntolerance"
+						@click="handleResourceChange('allergyIntolerance', 6)"
+						:lazy="true"
+						:title-link-class="linkClass(6)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="allergyIntolerances"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column prop="resource.code" min-width="260" label="Allergy/Intolerance Code Display" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.code && scope.row.resource.code.text }}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Note Time DateTime" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Asserted Date" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Criticality" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Category" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="200" label="Clinical Status" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Procedure"
+						name="procedure"
+						@click="handleResourceChange('procedure', 7)"
+						:lazy="true"
+						:title-link-class="linkClass(7)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="procedures"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column prop="resource.code" min-width="260" label="Procedure Code Display" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.code && scope.row.resource.code.text }}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Category Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Reason Code Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Notes Time DateTime" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Diagnostic Report"
+						name="diagnosticReport"
+						@click="handleResourceChange('diagnosticReport', 8)"
+						:lazy="true"
+						:title-link-class="linkClass(8)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="diagnosticReports"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column prop="resource.code" min-width="260" label="Diagnostic Report Code Display" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.code && scope.row.resource.code.text }}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Category Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Effective Date" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Diagnosis Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Immunization"
+						name="immunization"
+						@click="handleResourceChange('immunization', 9)"
+						:lazy="true"
+						:title-link-class="linkClass(9)"
 					>
 						<el-table
 							style="width: 100%"
@@ -223,7 +400,183 @@ export default {
 							</el-table-column>
 						</el-table>
 					</b-tab>
-				</el-tabs>
+
+					<b-tab
+						title="CarePlan"
+						name="carePlan"
+						@click="handleResourceChange('CarePlan', 10)"
+						:lazy="true"
+						:title-link-class="linkClass(10)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="carePlans"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column min-width="240" label="Category Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="220" label="Period Start DateTime" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="220" label="Period End DateTime" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="220" label="Desc" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Goal"
+						name="goal"
+						@click="handleResourceChange('goal', 11)"
+						:lazy="true"
+						:title-link-class="linkClass(11)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="goals"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column min-width="240" label="Category Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="220" label="Status Date" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Description Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Start" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Target Due Date" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Note Time DateTime" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Detected Issue"
+						name="detectedIssue"
+						@click="handleResourceChange('detectedIssue', 12)"
+						:lazy="true"
+						:title-link-class="linkClass(12)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="detectedIssues"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column min-width="220" label="Status Date" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="220" label="Status" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Severity" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Details" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Category Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Mitigation Action Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Family Member History"
+						name="familyMemberHistory"
+						@click="handleResourceChange('familyMemberHistory', 13)"
+						:lazy="true"
+						:title-link-class="linkClass(13)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="familyMemberHistories"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column min-width="180" label="Date" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Name" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Relationship Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Document Reference"
+						name="documentReference"
+						@click="handleResourceChange('documentReference', 14)"
+						:lazy="true"
+						:title-link-class="linkClass(14)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="documentReferences"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column min-width="240" label="Type Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Class Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="180" label="Status" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="DocStatus Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+							<el-table-column min-width="240" label="Security Label Code Display" sortable>
+								<template slot-scope="scope">
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+				</b-tabs>
 			</b-col>
 		</b-row>
 	`,
@@ -236,7 +589,18 @@ export default {
 			observations: [],
 			conditions: [],
 			medicationRequests: [],
+			medicationDispenses: [],
+			medicationStatements: [],
 			immunizations: [],
+			allergyIntolerances: [],
+			procedures: [],
+			diagnosticReports: [],
+			carePlans: [],
+			careTeams: [],
+			goals: [],
+			detectedIssues: [],
+			familyMemberHistories: [],
+			documentReferences: [],
 			tabIndex: 0
 		};
 	},
@@ -292,10 +656,87 @@ export default {
 				.catch(error => this.$message.error(errorMessage(error.response)))
 				.finally(() => this.loading = false);
 		},
+		loadMedicationDispense() {
+			this.loading = true;
+			axios.get("/fhir/MedicationDispense", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.medicationDispenses = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadMedicationStatement() {
+			this.loading = true;
+			axios.get("/fhir/MedicationStatement", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.medicationStatements = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
 		loadImmunization() {
 			this.loading = true;
 			axios.get("/fhir/Immunization", { params: { patient: this.patient.resource.id, _count: 100 } })
 				.then(({ data }) => this.immunizations = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadAllergyIntolerance() {
+			this.loading = true;
+			axios.get("/fhir/AllergyIntolerance", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.allergyIntolerances = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadProcedure() {
+			this.loading = true;
+			axios.get("/fhir/Procedure", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.procedures = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadDiagnosticReport() {
+			this.loading = true;
+			axios.get("/fhir/DiagnosticReport", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.diagnosticReports = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadCarePlan() {
+			this.loading = true;
+			axios.get("/fhir/CarePlan", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.carePlans = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadCareTeam() {
+			this.loading = true;
+			axios.get("/fhir/CareTeam", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.careTeams = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadGoal() {
+			this.loading = true;
+			axios.get("/fhir/Goal", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.goals = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadDetectedIssue() {
+			this.loading = true;
+			axios.get("/fhir/DetectedIssue", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.detectedIssues = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadFamilyMemberHistory() {
+			this.loading = true;
+			axios.get("/fhir/FamilyMemberHistory", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.familyMemberHistories = data.entry)
+				.catch(error => this.$message.error(errorMessage(error.response)))
+				.finally(() => this.loading = false);
+		},
+		loadDocumentReference() {
+			this.loading = true;
+			axios.get("/fhir/DocumentReference", { params: { patient: this.patient.resource.id, _count: 100 } })
+				.then(({ data }) => this.documentReferences = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
 				.finally(() => this.loading = false);
 		},
@@ -305,7 +746,18 @@ export default {
 				observation: this.loadObservation,
 				condition: this.loadCondition,
 				medicationRequest: this.loadMedicationRequest,
-				immunization: this.loadImmunization
+				medicationDispense: this.loadMedicationDispense,
+				medicationStatement: this.loadMedicationStatement,
+				immunization: this.loadImmunization,
+				allergyIntolerance: this.loadAllergyIntolerance,
+				procedure: this.loadProcedure,
+				diagnosticReport: this.loadDiagnosticReport,
+				carePlan: this.loadCarePlan,
+				careTeam: this.loadCareTeam,
+				goal: this.loadGoal,
+				detectedIssue: this.loadDetectedIssue,
+				familyMemberHistory: this.loadfamilyMemberHistory,
+				documentReference: this.loaddocumentReference,
 			};
 
 			this.tabIndex = tabId

@@ -119,7 +119,7 @@ export default {
 							<b-button
 								block
 								variant="primary"
-								native-type="submit"
+								type="submit"
 							>
 								Add Payer
 							</b-button>
