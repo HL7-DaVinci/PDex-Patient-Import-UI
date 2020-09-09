@@ -20,7 +20,7 @@ export default {
 					<b-tab
 						title="Observation"
 						name="observation"
-						@click="handleResourceChange"
+						@click="handleResourceChange({'observation'})"
 						:lazy="true"
 						active
 						:title-link-class="linkClass(0)"

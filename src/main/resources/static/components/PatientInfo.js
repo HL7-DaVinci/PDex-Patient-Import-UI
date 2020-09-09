@@ -94,7 +94,7 @@ export default {
 		address() {
 			const address = this.data.address && this.data.address[0];
 
-			return address ? `${address.line.join(" ")},  ${address.postalCode}, ${address.city} ${address.country}` : "";
+			return address ? `${address.line && address.line.join(" ")},  ${address.postalCode}, ${address.city} ${address.country}` : "";
 		},
 		id() {
 			return this.data.id;
