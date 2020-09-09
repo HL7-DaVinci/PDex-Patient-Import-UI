@@ -12,16 +12,19 @@ export default {
 				v-if="encounterReady"
 				cols="12"
 			>
+				<b-form-select @change="handleResourceChange(resourceType)" v-model="resourceType">
+					<option v-for="item in sortOptions" :value="item.value">{{item.text}}</option>
+				</b-form-select>
 				<b-tabs
 					content-class="mt-3"
-					v-model="selectedResource"
+					v-model="tabIndex"
 					pills
-					fill
+					small
 				>
 					<b-tab
 						title="Observation"
 						name="observation"
-						@click="handleResourceChange('observation', 0)"
+						@click="handleResourceChange('observation')"
 						:lazy="true"
 						:title-link-class="linkClass(0)"
 					>
@@ -61,7 +64,7 @@ export default {
 					<b-tab
 						title="Condition"
 						name="condition"
-						@click="handleResourceChange('condition', 1)"
+						@click="handleResourceChange('condition')"
 						:lazy="true"
 						:title-link-class="linkClass(1)"
 					>
@@ -112,7 +115,7 @@ export default {
 					<b-tab
 						title="Medication Request"
 						name="medicationRequest"
-						@click="handleResourceChange('medicationRequest', 2)"
+						@click="handleResourceChange('medicationRequest')"
 						:lazy="true"
 						:title-link-class="linkClass(2)"
 					>
@@ -153,7 +156,7 @@ export default {
 					<b-tab
 						title="Medication Dispense"
 						name="medicationDispense"
-						@click="handleResourceChange('medicationDispense', 3)"
+						@click="handleResourceChange('medicationDispense')"
 						:lazy="true"
 						:title-link-class="linkClass(3)"
 					>
@@ -179,7 +182,7 @@ export default {
 					<b-tab
 						title="Medication Statement"
 						name="medicationStatement"
-						@click="handleResourceChange('medicationStatement', 4)"
+						@click="handleResourceChange('medicationStatement')"
 						:lazy="true"
 						:title-link-class="linkClass(4)"
 					>
@@ -215,7 +218,7 @@ export default {
 					<b-tab
 						title="Allergy Intolerance"
 						name="allergyIntolerance"
-						@click="handleResourceChange('allergyIntolerance', 5)"
+						@click="handleResourceChange('allergyIntolerance')"
 						:lazy="true"
 						:title-link-class="linkClass(5)"
 					>
@@ -261,7 +264,7 @@ export default {
 					<b-tab
 						title="Procedure"
 						name="procedure"
-						@click="handleResourceChange('procedure', 6)"
+						@click="handleResourceChange('procedure')"
 						:lazy="true"
 						:title-link-class="linkClass(6)"
 					>
@@ -302,7 +305,7 @@ export default {
 					<b-tab
 						title="Diagnostic Report"
 						name="diagnosticReport"
-						@click="handleResourceChange('diagnosticReport', 7)"
+						@click="handleResourceChange('diagnosticReport')"
 						:lazy="true"
 						:title-link-class="linkClass(7)"
 					>
@@ -343,7 +346,7 @@ export default {
 					<b-tab
 						title="Immunization"
 						name="immunization"
-						@click="handleResourceChange('immunization', 8)"
+						@click="handleResourceChange('immunization')"
 						:lazy="true"
 						:title-link-class="linkClass(8)"
 					>
@@ -374,7 +377,7 @@ export default {
 					<b-tab
 						title="CarePlan"
 						name="carePlan"
-						@click="handleResourceChange('CarePlan', 9)"
+						@click="handleResourceChange('CarePlan')"
 						:lazy="true"
 						:title-link-class="linkClass(9)"
 					>
@@ -410,7 +413,7 @@ export default {
 					<b-tab
 						title="Care"
 						name="careTeam"
-						@click="handleResourceChange('CareTeam', 10)"
+						@click="handleResourceChange('CareTeam')"
 						:lazy="true"
 						:title-link-class="linkClass(10)"
 					>
@@ -446,7 +449,7 @@ export default {
 					<b-tab
 						title="Goal"
 						name="goal"
-						@click="handleResourceChange('goal', 11)"
+						@click="handleResourceChange('goal')"
 						:lazy="true"
 						:title-link-class="linkClass(11)"
 					>
@@ -492,7 +495,7 @@ export default {
 					<b-tab
 						title="Detected Issue"
 						name="detectedIssue"
-						@click="handleResourceChange('detectedIssue', 12)"
+						@click="handleResourceChange('detectedIssue')"
 						:lazy="true"
 						:title-link-class="linkClass(12)"
 					>
@@ -538,7 +541,7 @@ export default {
 					<b-tab
 						title="Family Member History"
 						name="familyMemberHistory"
-						@click="handleResourceChange('familyMemberHistory', 13)"
+						@click="handleResourceChange('familyMemberHistory')"
 						:lazy="true"
 						:title-link-class="linkClass(13)"
 					>
@@ -569,7 +572,7 @@ export default {
 					<b-tab
 						title="Document Reference"
 						name="documentReference"
-						@click="handleResourceChange('documentReference', 14)"
+						@click="handleResourceChange('documentReference')"
 						:lazy="true"
 						:title-link-class="linkClass(14)"
 					>
@@ -631,7 +634,26 @@ export default {
 			detectedIssues: [],
 			familyMemberHistories: [],
 			documentReferences: [],
-			tabIndex: 0
+			tabIndex: 0,
+			resourceType: 'observation',
+			sortOptions: [
+				 { text: 'Observation', value: 'observation' },
+				 { text: 'Condition', value: 'condition' },
+				 { text: 'Encounter', value: 'encounter' },
+				 { text: 'Medication Request', value: 'medicationRequest' },
+				 { text: 'Medication Dispense', value: 'medicationDispense' },
+				 { text: 'Medication Statement', value: 'medicationStatement' },
+				 { text: 'Allergy Intolerance', value: 'allergyIntolerance' },
+				 { text: 'Procedure', value: 'procedure' },
+				 { text: 'Diagnostic Report', value: 'diagnosticReport' },
+				 { text: 'Immunization', value: 'immunization' },
+				 { text: 'Care Plan', value: 'carePlan' },
+				 { text: 'Care Team', value: 'careTeam' },
+				 { text: 'Goal', value: 'goal' },
+				 { text: 'Detected Issue', value: 'detectedIssue' },
+				 { text: 'Family Member History', value: 'familyMemberHistory' },
+				 { text: 'Document Reference', value: 'documentReference' },
+			]
 		};
 	},
 	mounted() {
@@ -659,6 +681,7 @@ export default {
 		},
 		loadObservation() {
 			this.loading = true;
+			this.tabIndex = 0;
 			axios.get("/fhir/Observation", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.observations = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -666,6 +689,7 @@ export default {
 		},
 		loadCondition() {
 			this.loading = true;
+			this.tabIndex = 1;
 			axios.get("/fhir/Condition", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.conditions = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -673,6 +697,7 @@ export default {
 		},
 		loadMedicationRequest() {
 			this.loading = true;
+			this.tabIndex = 2;
 			axios.get("/fhir/MedicationRequest", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.medicationRequests = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -680,6 +705,7 @@ export default {
 		},
 		loadMedicationDispense() {
 			this.loading = true;
+			this.tabIndex = 3;
 			axios.get("/fhir/MedicationDispense", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.medicationDispenses = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -687,6 +713,7 @@ export default {
 		},
 		loadMedicationStatement() {
 			this.loading = true;
+			this.tabIndex = 4;
 			axios.get("/fhir/MedicationStatement", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.medicationStatements = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -694,6 +721,7 @@ export default {
 		},
 		loadImmunization() {
 			this.loading = true;
+			this.tabIndex = 5;
 			axios.get("/fhir/Immunization", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.immunizations = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -701,6 +729,7 @@ export default {
 		},
 		loadAllergyIntolerance() {
 			this.loading = true;
+			this.tabIndex = 6;
 			axios.get("/fhir/AllergyIntolerance", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.allergyIntolerances = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -708,6 +737,7 @@ export default {
 		},
 		loadProcedure() {
 			this.loading = true;
+			this.tabIndex = 7;
 			axios.get("/fhir/Procedure", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.procedures = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -715,6 +745,7 @@ export default {
 		},
 		loadDiagnosticReport() {
 			this.loading = true;
+			this.tabIndex = 8;
 			axios.get("/fhir/DiagnosticReport", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.diagnosticReports = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -722,6 +753,7 @@ export default {
 		},
 		loadCarePlan() {
 			this.loading = true;
+			this.tabIndex = 9;
 			axios.get("/fhir/CarePlan", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.carePlans = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -729,6 +761,7 @@ export default {
 		},
 		loadCareTeam() {
 			this.loading = true;
+			this.tabIndex = 10;
 			axios.get("/fhir/CareTeam", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.careTeams = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -736,6 +769,7 @@ export default {
 		},
 		loadGoal() {
 			this.loading = true;
+			this.tabIndex = 11;
 			axios.get("/fhir/Goal", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.goals = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -743,6 +777,7 @@ export default {
 		},
 		loadDetectedIssue() {
 			this.loading = true;
+			this.tabIndex = 12;
 			axios.get("/fhir/DetectedIssue", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.detectedIssues = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -750,6 +785,7 @@ export default {
 		},
 		loadFamilyMemberHistory() {
 			this.loading = true;
+			this.tabIndex = 13;
 			axios.get("/fhir/FamilyMemberHistory", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.familyMemberHistories = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
@@ -757,12 +793,13 @@ export default {
 		},
 		loadDocumentReference() {
 			this.loading = true;
+			this.tabIndex = 14;
 			axios.get("/fhir/DocumentReference", { params: { encounter: this.encounter.resource.id, _count: 100 } })
 				.then(({ data }) => this.documentReferences = data.entry)
 				.catch(error => this.$message.error(errorMessage(error.response)))
 				.finally(() => this.loading = false);
 		},
-		handleResourceChange({ name, tabId }) {
+		handleResourceChange({ name }) {
 			const API_MAP = {
 				observation: this.loadObservation,
 				condition: this.loadCondition,
@@ -780,8 +817,6 @@ export default {
 				familyMemberHistory: this.loadfamilyMemberHistory,
 				documentReference: this.loaddocumentReference,
 			};
-
-			this.tabIndex = tabId
 
 			API_MAP[name]();
 		},

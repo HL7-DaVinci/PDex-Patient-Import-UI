@@ -13,6 +13,10 @@ body {
     width: 100%;
 }
 
+.nav-pills {
+    display: none !important;
+}
+
 .center-button {
     justify-content: space-around !important;
 }
