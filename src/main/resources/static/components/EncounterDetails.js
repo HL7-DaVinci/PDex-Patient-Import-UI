@@ -194,12 +194,14 @@ export default {
 									{{ scope.row.resource.medicationCodeableConcept && scope.row.resource.medicationCodeableConcept.text }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Effective" sortable>
+							<el-table-column prop="resource.effectiveDateTime" min-width="180" label="Effective" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.effectiveDateTime }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Taken" sortable>
+							<el-table-column prop="resource.taken" min-width="180" label="Taken" sortable>
 								<template slot-scope="scope">
+								{{ scope.row.resource.taken }}
 								</template>
 							</el-table-column>
 							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
@@ -228,24 +230,29 @@ export default {
 									{{ scope.row.resource.code && scope.row.resource.code.text }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Note Time DateTime" sortable>
+							<el-table-column prop="resource.note" min-width="240" label="Note Time DateTime" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.note && scope.row.resource.note[0] }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Asserted Date" sortable>
+							<el-table-column prop="resource.onsetDateTime" min-width="180" label="Asserted Date" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.onsetDateTime }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Criticality" sortable>
+							<el-table-column prop="resource.criticality" min-width="180" label="Criticality" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.criticality }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Category" sortable>
+							<el-table-column prop="resource.category" min-width="180" label="Category" sortable>
 								<template slot-scope="scope">
+								{{ scope.row.resource.category && scope.row.resource.category[0] }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="200" label="Clinical Status" sortable>
+							<el-table-column prop="resource.clinicalStatus" min-width="200" label="Clinical Status" sortable>
 								<template slot-scope="scope">
+								{{ scope.row.resource.clinicalStatus && scope.row.resource.clinicalStatus.coding && scope.row.resource.clinicalStatus.coding[0] && scope.row.resource.clinicalStatus.coding[0].code }}
 								</template>
 							</el-table-column>
 						</el-table>
@@ -266,19 +273,22 @@ export default {
 						>
 							<el-table-column prop="resource.code" min-width="260" label="Procedure Code Display" sortable>
 								<template slot-scope="scope">
-									{{ scope.row.resource.code && scope.row.resource.code.text }}
+									{{ scope.row.resource.code && scope.row.resource.code[0] && scope.row.resource.code[0].coding }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Category Code Display" sortable>
+							<el-table-column prop="resource.category" min-width="240" label="Category Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.category && scope.row.resource.category.coding && scope.row.resource.category.coding[0] && scope.row.resource.category.coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Reason Code Code Display" sortable>
+							<el-table-column prop="resource.reasonCode" min-width="180" label="Reason Code Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.reasonCode && scope.row.resource.reasonCode[0] && scope.row.resource.reasonCode[0].coding && scope.row.resource.reasonCode[0].coding[0] && scope.row.resource.reasonCode[0].coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Notes Time DateTime" sortable>
+							<el-table-column prop="resource.notes" min-width="180" label="Notes Time DateTime" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.notes && scope.row.resource.notes[0] && scope.row.resource.notes[0].time }}
 								</template>
 							</el-table-column>
 							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
@@ -304,19 +314,22 @@ export default {
 						>
 							<el-table-column prop="resource.code" min-width="260" label="Diagnostic Report Code Display" sortable>
 								<template slot-scope="scope">
-									{{ scope.row.resource.code && scope.row.resource.code.text }}
+									{{ scope.row.resource.code && scope.row.resource.code.coding && scope.row.resource.code.coding[0] && scope.row.resource.code.coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Category Code Display" sortable>
+							<el-table-column prop="resource.category" min-width="240" label="Category Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.category && scope.row.resource.category.coding && scope.row.resource.category.coding[0] && scope.row.resource.category.coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Effective Date" sortable>
+							<el-table-column prop="resource.effectiveDateTime" min-width="180" label="Effective Date" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.effectiveDateTime }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Diagnosis Code Display" sortable>
+							<el-table-column prop="resource.diagnosis" min-width="180" label="Diagnosis Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.diagnosis && scope.row.resource.diagnosis.coding && scope.row.resource.diagnosis.coding[0] && scope.row.resource.diagnosis.coding[0].display }}
 								</template>
 							</el-table-column>
 							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
@@ -371,20 +384,60 @@ export default {
 							:stripe="true"
 							v-loading="loading"
 						>
-							<el-table-column min-width="240" label="Category Code Display" sortable>
+							<el-table-column prop="resource.category" min-width="240" label="Category Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.category && scope.row.resource.category[0] && scope.row.resource.category[0].coding && scope.row.resource.category[0].coding[0] && scope.row.resource.category[0].coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="220" label="Period Start DateTime" sortable>
+							<el-table-column prop="resource.period" min-width="220" label="Period Start DateTime" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.period && scope.row.resource.period.start }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="220" label="Period End DateTime" sortable>
+							<el-table-column prop="resource.period" min-width="220" label="Period End DateTime" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.period && scope.row.resource.period.end }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="220" label="Desc" sortable>
+							<el-table-column prop="resource.description" min-width="220" label="Desc" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.description }}
+								</template>
+							</el-table-column>
+						</el-table>
+					</b-tab>
+
+					<b-tab
+						title="Care"
+						name="careTeam"
+						@click="handleResourceChange('CareTeam', 10)"
+						:lazy="true"
+						:title-link-class="linkClass(10)"
+					>
+						<el-table
+							style="width: 100%"
+							:data="careTeams"
+							:stripe="true"
+							v-loading="loading"
+						>
+							<el-table-column prop="resource.name" min-width="220" label="Name" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.name }}
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.category" min-width="240" label="Category Code Display" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.category && scope.row.resource.category[0] && scope.row.resource.category[0].coding && scope.row.resource.category[0].coding[0] && scope.row.resource.category[0].coding[0].display }}
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.period" min-width="220" label="Period Start DateTime" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.period && scope.row.resource.period.start }}
+								</template>
+							</el-table-column>
+							<el-table-column prop="resource.period" min-width="220" label="Period End DateTime" sortable>
+								<template slot-scope="scope">
+									{{ scope.row.resource.period && scope.row.resource.period.end }}
 								</template>
 							</el-table-column>
 						</el-table>
@@ -393,9 +446,9 @@ export default {
 					<b-tab
 						title="Goal"
 						name="goal"
-						@click="handleResourceChange('goal', 10)"
+						@click="handleResourceChange('goal', 11)"
 						:lazy="true"
-						:title-link-class="linkClass(10)"
+						:title-link-class="linkClass(11)"
 					>
 						<el-table
 							style="width: 100%"
@@ -403,28 +456,34 @@ export default {
 							:stripe="true"
 							v-loading="loading"
 						>
-							<el-table-column min-width="240" label="Category Code Display" sortable>
+							<el-table-column prop="resource.category" min-width="240" label="Category Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.category && scope.row.resource.category[0] && scope.row.resource.category[0].coding && scope.row.resource.category[0].coding[0] && scope.row.resource.category[0].coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="220" label="Status Date" sortable>
+							<el-table-column prop="resource.status" min-width="220" label="Status Date" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Description Code Display" sortable>
+							<el-table-column prop="resource.description" min-width="240" label="Description Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.description }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Start" sortable>
+							<el-table-column prop="resource.start" min-width="180" label="Start" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.start }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Target Due Date" sortable>
+							<el-table-column prop="resource.target" min-width="240" label="Target Due Date" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.target }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Note Time DateTime" sortable>
+							<el-table-column prop="resource.note" min-width="240" label="Note Time DateTime" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.note && scope.row.resource.note[0] }}
 								</template>
 							</el-table-column>
 						</el-table>
@@ -433,9 +492,9 @@ export default {
 					<b-tab
 						title="Detected Issue"
 						name="detectedIssue"
-						@click="handleResourceChange('detectedIssue', 11)"
+						@click="handleResourceChange('detectedIssue', 12)"
 						:lazy="true"
-						:title-link-class="linkClass(11)"
+						:title-link-class="linkClass(12)"
 					>
 						<el-table
 							style="width: 100%"
@@ -443,28 +502,34 @@ export default {
 							:stripe="true"
 							v-loading="loading"
 						>
-							<el-table-column min-width="220" label="Status Date" sortable>
+							<el-table-column prop="resource.status" min-width="220" label="Status Date" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="220" label="Status" sortable>
+							<el-table-column prop="resource.status" min-width="220" label="Status" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Severity" sortable>
+							<el-table-column prop="resource.severity" min-width="180" label="Severity" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.severity }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Details" sortable>
+							<el-table-column prop="resource.detail" min-width="180" label="Details" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.detail }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Category Code Display" sortable>
+							<el-table-column prop="resource.category" min-width="240" label="Category Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.category && scope.row.resource.category[0] && scope.row.resource.category[0].coding && scope.row.resource.category[0].coding[0] && scope.row.resource.category[0].coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Mitigation Action Code Display" sortable>
+							<el-table-column prop="resource.mitigation" min-width="240" label="Mitigation Action Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.mitigation && scope.row.resource.mitigation[0] && scope.row.resource.mitigation[0].action && scope.row.resource.mitigation[0].action.coding && scope.row.resource.mitigation[0].action.coding[0] && scope.row.resource.mitigation[0].action.coding[0].display }}
 								</template>
 							</el-table-column>
 						</el-table>
@@ -473,9 +538,9 @@ export default {
 					<b-tab
 						title="Family Member History"
 						name="familyMemberHistory"
-						@click="handleResourceChange('familyMemberHistory', 12)"
+						@click="handleResourceChange('familyMemberHistory', 13)"
 						:lazy="true"
-						:title-link-class="linkClass(12)"
+						:title-link-class="linkClass(13)"
 					>
 						<el-table
 							style="width: 100%"
@@ -483,16 +548,19 @@ export default {
 							:stripe="true"
 							v-loading="loading"
 						>
-							<el-table-column min-width="180" label="Date" sortable>
+							<el-table-column prop="resource.date" min-width="180" label="Date" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.date }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Name" sortable>
+							<el-table-column prop="resource.name" min-width="180" label="Name" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.name }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Relationship Code Display" sortable>
+							<el-table-column prop="resource.relationship" min-width="180" label="Relationship Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.relationship && scope.row.resource.relationship.coding && scope.row.resource.relationship.coding[0] && scope.row.resource.relationship.coding[0].display }}
 								</template>
 							</el-table-column>
 						</el-table>
@@ -501,9 +569,9 @@ export default {
 					<b-tab
 						title="Document Reference"
 						name="documentReference"
-						@click="handleResourceChange('documentReference', 13)"
+						@click="handleResourceChange('documentReference', 14)"
 						:lazy="true"
-						:title-link-class="linkClass(13)"
+						:title-link-class="linkClass(14)"
 					>
 						<el-table
 							style="width: 100%"
@@ -511,24 +579,29 @@ export default {
 							:stripe="true"
 							v-loading="loading"
 						>
-							<el-table-column min-width="240" label="Type Code Display" sortable>
+							<el-table-column prop="resource.type" min-width="240" label="Type Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.type && scope.row.resource.type.coding && scope.row.resource.type.coding[0] && scope.row.resource.type.coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Class Code Display" sortable>
+							<el-table-column prop="resource.class" min-width="240" label="Class Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.class && scope.row.resource.class.coding && scope.row.resource.class.coding[0] && scope.row.resource.class.coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="180" label="Status" sortable>
+							<el-table-column prop="resource.status" min-width="180" label="Status" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.status }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="DocStatus Code Display" sortable>
+							<el-table-column prop="resource.documentStatus" min-width="240" label="DocStatus Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.documentStatus && scope.row.resource.documentStatus.coding && scope.row.resource.documentStatus.coding[0] && scope.row.resource.documentStatus.coding[0].display }}
 								</template>
 							</el-table-column>
-							<el-table-column min-width="240" label="Security Label Code Display" sortable>
+							<el-table-column prop="resource.securityLabel" min-width="240" label="Security Label Code Display" sortable>
 								<template slot-scope="scope">
+									{{ scope.row.resource.securityLabel && scope.row.resource.securityLabel[0] && scope.row.resource.securityLabel[0].coding && scope.row.resource.securityLabel[0].coding[0] && scope.row.resource.securityLabel[0].coding[0].display }}
 								</template>
 							</el-table-column>
 						</el-table>
