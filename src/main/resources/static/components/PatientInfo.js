@@ -4,8 +4,7 @@ export default {
 		<b-card class="mb-2 patient-info-card" v-bind:header="fullName">
 			<b-row class="patient-info-field">
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">Gender</div>
@@ -13,8 +12,7 @@ export default {
 				</b-col>
 
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">DOB</div>
@@ -22,8 +20,7 @@ export default {
 				</b-col>
 
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">Email</div>
@@ -31,8 +28,7 @@ export default {
 				</b-col>
 
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">Phone</div>
@@ -40,8 +36,7 @@ export default {
 				</b-col>
 
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">Address</div>
@@ -49,8 +44,7 @@ export default {
 				</b-col>
 
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">ID</div>
@@ -58,8 +52,7 @@ export default {
 				</b-col>
 
 				<b-col
-					cols="12"
-					md="6"
+					cols="6"
 					class="mb-1"
 				>
 					<div class="text-muted patient-info-label">MRN</div>

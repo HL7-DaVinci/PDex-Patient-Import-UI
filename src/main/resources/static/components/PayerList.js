@@ -64,6 +64,7 @@ export default {
 					<b-modal
 						title="Select From Payer List"
 						id="modal"
+						hide-footer
 						:append-to-body="true"
 						:destroy-on-close="true"
 						custom-class="new-payer-dialog"
@@ -115,12 +116,13 @@ export default {
 								<span>Insurre</span>
 							</el-radio>
 
-							<el-button
-								type="primary"
+							<b-button
+								block
+								variant="primary"
 								native-type="submit"
 							>
 								Add Payer
-							</el-button>
+							</b-button>
 						</el-form>
 					</b-modal>
 				</b-col>

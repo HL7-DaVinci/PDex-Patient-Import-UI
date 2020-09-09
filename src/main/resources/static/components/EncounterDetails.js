@@ -5,58 +5,62 @@ export default {
 	name: "EncounterDetails",
 	components: { EncounterInfo },
 	template: `
-		<el-row>
+		<b-row>
 			<el-page-header @back="goBack"></el-page-header>
 			<encounter-info :data="encounter.resource || {}"></encounter-info>
-			<el-col
+			<b-col
 				v-if="encounterReady"
-				:span="24"
+				cols="12"
 			>
-				<el-tabs
+				<b-tabs
+					content-class="mt-3"
 					v-model="selectedResource"
-					type="border-card"
-					@tab-click="handleResourceChange"
+					pills
+					fill
 				>
-					<el-tab-pane
+					<b-tab
 						label="Observation"
 						name="observation"
+						@click="handleResourceChange('observation')"
 						:lazy="true"
+						active
+						:title-link-class="linkClass(0)"
 					>
 						<el-table
 							:data="observations"
 							:stripe="true"
 							v-loading="loading"
 						>
-							<el-table-column label="Observation Code Display">
+							<el-table-column prop="resource.code" min-width="240" label="Observation Code Display" sortable>
 								<template slot-scope="scope">
 									{{ scope.row.resource.code && scope.row.resource.code.text }}
 								</template>
 							</el-table-column>
-							<el-table-column label="Effective Date(s)">
+							<el-table-column prop="resource.effectiveDateTime" min-width="180" label="Effective Date(s)" sortable>
 								<template slot-scope="scope">
 									{{ scope.row.resource.effectiveDateTime | dateTime }}
 								</template>
 							</el-table-column>
-							<el-table-column label="Value">
+							<el-table-column prop="resource.valueQuantity" min-width="180" label="Value" sortable>
 								<template slot-scope="scope">
 									{{ scope.row.resource.valueQuantity && scope.row.resource.valueQuantity.value }} {{ scope.row.resource.valueQuantity && scope.row.resource.valueQuantity.unit }}
 								</template>
 							</el-table-column>
-							<el-table-column label="Category Code Display">
+							<el-table-column prop="resource.category" min-width="220" label="Category Code Display" sortable>
 								<template slot-scope="scope">
 									{{ scope.row.resource.category && scope.row.resource.category[0] && scope.row.resource.category[0].text }}
 								</template>
 							</el-table-column>
-							<el-table-column label="Interpretation Code Display">
+							<el-table-column prop="resource.interpretation" min-width="260" label="Interpretation Code Display" sortable>
 								<template slot-scope="scope">
 									{{ scope.row.resource.interpretation }}
 								</template>
 							</el-table-column>
 						</el-table>
-					</el-tab-pane>
-				</el-tabs>
-			</el-col>
-		</el-row>
+					</b-tab>
+				</b-tabs>
+			</b-col>
+		</b-row>
 	`,
 	props: ["id"], // passed from router
 	data() {
@@ -64,7 +68,8 @@ export default {
 			loading: false,
 			selectedResource: "observation",
 			encounter: {},
-			observations: []
+			observations: [],
+			tabIndex: 0
 		};
 	},
 	mounted() {
@@ -76,6 +81,13 @@ export default {
 		}
 	},
 	methods: {
+		linkClass(idx) {
+			if (this.tabIndex === idx) {
+				return ['bg-primary', 'text-light']
+			} else {
+				return ['bg-light', 'text-info']
+			}
+		},
 		loadEncounter() {
 			this.loading = true;
 			return axios.get("/fhir/Encounter", { params: { _id: `${this.id}` } })

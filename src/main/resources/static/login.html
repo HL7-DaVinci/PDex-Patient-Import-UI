@@ -20,6 +20,14 @@
             margin: 0;
         }
 
+        .card-container {
+            justify-content: center !important;
+        }
+
+        .login-card {
+            max-width: 350px;
+        }
+
         .logo-img {
             width: 120px;
             height: auto;
@@ -72,21 +80,19 @@
             <b-navbar-brand>
                 <b-img left src="assets/da-vinci-logo.png" class="d-inline-block align-top logo-img" alt="Da Vinci Logo">
             </b-navbar-brand>
-            <b-navbar-brand href="/"><b-icon-house-fill></b-icon-house-fill></b-navbar-brand>
-            <b-navbar-brand href="/logout"><b-icon-box-arrow-right></b-icon-box-arrow-right></b-navbar-brand>
+
             <b-navbar-brand>
                 <b-img right src="assets/healthlx-logo.png" class="d-inline-block align-top logo-img" alt="HealthLX Logo">
             </b-navbar-brand>
         </b-navbar>
 
-        <b-row>
+        <b-row class="m2-2 card-container">
             <Login />
         </b-row>
     </b-container>
 
     <script type="text/x-template" id="login-template">
-        <el-card>
-            <h2>Login</h2>
+        <b-card header="Login" class="mt-2 login-card">
             <el-form
                 class="login-form"
                 :model="form"
@@ -122,17 +128,17 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <el-button
+                    <b-button
                         :loading="loading"
                         class="login-button"
-                        type="primary"
-                        native-type="submit"
+                        variant="primary"
+                        type="submit"
                     >
                         Login
-                    </el-button>
+                    </b-button>
                 </el-form-item>
             </el-form>
-        </el-card>
+        </b-card>
     </script>
 
     <script type="text/javascript">
