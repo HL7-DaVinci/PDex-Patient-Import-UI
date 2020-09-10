@@ -64,7 +64,7 @@ app:
         token-uri: https://auth.logicahealth.org/token
         fhir-server-uri: https://api.logicahealth.org/PDEXPATIONTUIR4/data
         client-id: 706579ca-48b9-451f-b7e9-2de6a81cc8db
-        exclude-resources: MedicationDispense, AllergyIntolerance
+        exclude-resources: Practitioner
         scope: launch/patient patient/*.read
       - name: Premium
         auth-uri: https://auth.logicahealth.org/authorize
