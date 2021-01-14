@@ -1,0 +1,14 @@
+@import "../vant-variables.less";
+
+.van-radio {
+	font-weight: @global-font-weight-medium;
+
+	&__icon {
+		width: 25px;
+		height: 25px;
+	}
+
+	&[aria-checked="true"] .van-radio__label {
+		color: @active-color;
+	}
+}

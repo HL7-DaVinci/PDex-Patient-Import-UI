@@ -1,0 +1,19 @@
+@mixin icon($src, $size) {
+	display: inline-block;
+	width: $size;
+	height: $size;
+	mask-image: url($src);
+	-webkit-mask-image: url($src);
+	background-color: currentColor;
+	mask-size: 100%;
+	-webkit-mask-size: 100%;
+	mask-repeat: no-repeat;
+	-webkit-mask-repeat: no-repeat;
+}
+
+@mixin dont-break-out() {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+	hyphens: auto;
+}

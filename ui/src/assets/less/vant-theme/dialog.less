@@ -1,0 +1,55 @@
+@import "../vant-variables.less";
+
+.van-dialog {
+	position: absolute;
+	height: 335px;
+
+	&__header {
+		margin: 70px 0 15px 0;
+		font-size: @global-xlarge-font-size;
+		font-weight: @global-font-weight-medium;
+	}
+
+	&__content {
+		text-align: center;
+		font-weight: @global-font-weight-medium;
+		font-size: @global-large-font-size;
+		padding: 0 20px;
+		margin-bottom: 50px;
+	}
+
+	&__cancel {
+		color: @active-color;
+		background-color: @mirage;
+		border: 1px solid @active-color;
+	}
+
+	&__confirm {
+		color: @red;
+		background-color: @mirage;
+		border: 1px solid @red;
+	}
+
+	&__confirm,
+	&__cancel {
+		width: 140px;
+		flex: none;
+		font-size: @global-large-font-size;
+		font-weight: @global-font-weight-medium;
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: space-between;
+		padding: 0 25px;
+	}
+
+	& .van-hairline--top::after,
+	& .van-hairline--left::after{
+		border: none;
+	}
+}
+
+.van-overlay {
+	position: absolute;
+}

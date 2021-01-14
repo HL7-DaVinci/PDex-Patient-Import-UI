@@ -456,3 +456,7 @@ yarn-error.log*
 
 *.pb
 # End of https://www.gitignore.io/api/node,java,macos,linux,windows,eclipse,java-web,intellij,webstorm,sublimetext,visualstudiocode
+
+# Project specific ignores
+/api/src/main/resources/static/**/*
+ui/node/**/*

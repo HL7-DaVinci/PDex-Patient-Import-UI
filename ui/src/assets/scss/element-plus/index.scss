@@ -1,0 +1,18 @@
+@import "./common/var";
+
+@import "~element-plus/packages/theme-chalk/src/icon";
+@import "~element-plus/packages/theme-chalk/src/button";
+@import "~element-plus/packages/theme-chalk/src/form";
+@import "~element-plus/packages/theme-chalk/src/form-item";
+@import "~element-plus/packages/theme-chalk/src/input";
+@import "~element-plus/packages/theme-chalk/src/collapse";
+@import "~element-plus/packages/theme-chalk/src/collapse-item";
+@import "~element-plus/packages/theme-chalk/src/loading";
+@import "~element-plus/packages/theme-chalk/src/message-box";
+@import "~element-plus/packages/theme-chalk/src/notification";
+@import "~element-plus/packages/theme-chalk/src/dialog";
+
+@import "./button";
+@import "./form";
+@import "./collapse-item";
+@import "./dialog";

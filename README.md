@@ -7,26 +7,21 @@ Da Vinci reference implementation for the Patient Import UI use case.
 # Implementation Details
 Implementation is intended to prove the following functionality:
 1. OAuth2 Authorization for data import from multiple Payer systems.
-2. Querying of Patient data from a Payer FHIR Server using a token requested during step 1
-3. Storing Patient data from multiple Payer systems.
-4. Responsive UI to display Patient data.
-5. Group data by Encounter.
+1. Querying of Patient data from a Payer FHIR Server using a token requested during step 1
+1. Storing Patient data from multiple Payer systems.
+1. Responsive UI to display Patient data.
+1. Group data by Encounter.
 
 # Build
-This project is dependent on a module from https://github.com/HL7-DaVinci/PDex-Patient-Import-App Reference Implementation. Check out sources and run the following command from root:
-```sh
-./gradlew clean build publishToMavenLocal
-```
-This will publish all required dependencies to your local Maven repository and make them avialable for this project. Do this step only when something has changed in Patient Import App RI.
-After that go to PDex Patient Import UI project and run:
+Go to root project's folder and run:
 ```sh
 mvn clean install
 ```
 
 # Try it
-Run app with
+Run app with:
 ```sh
-java -jar target/patient-ui-1.0-SNAPSHOT.jar
+java -jar target/patient-ui-2.0-SNAPSHOT.jar
 ```
 Go to http://localhost:8080
 

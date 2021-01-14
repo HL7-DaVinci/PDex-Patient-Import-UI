@@ -1,0 +1,55 @@
+@import "~@/assets/scss/abstracts/mixins";
+@import "~@/assets/scss/abstracts/variables";
+
+// change default content model
+html {
+	box-sizing: border-box;
+	font-size: 16px;
+	color: $global-text-color;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	line-height: $global-line-height-small;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+	margin: 20px 0;
+}
+
+img,
+svg {
+	box-sizing: content-box;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+.text-muted {
+	color: $global-text-muted-color;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+	background-color: $white-smoke;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: $pinkish-grey;
+	border-radius: 10px;
+}
+
+[class*='van-hairline']::after {
+	display: none;
+}

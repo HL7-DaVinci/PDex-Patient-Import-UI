@@ -1,0 +1,28 @@
+@import "~@/assets/scss/abstracts/variables";
+
+.el-form-item__content {
+	line-height: $global-form-line-height;
+}
+
+.el-form-item__label {
+	line-height: $global-form-line-height;
+	font-weight: $global-font-weight-normal;
+	color: $global-text-muted-color;
+}
+
+.el-form--label-top .el-form-item__label {
+	padding-bottom: 5px;
+}
+
+.el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label,
+.el-form-item.is-required:not(.is-no-asterisk) .el-form-item__label-wrap > .el-form-item__label {
+	&:before {
+		display: none;
+	}
+
+	&:after {
+		content: "*";
+		color: #F56C6C;
+		margin-left: 4px;
+	}
+}

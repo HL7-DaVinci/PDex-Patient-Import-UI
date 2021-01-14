@@ -1,0 +1,24 @@
+@import "~@/assets/scss/abstracts/variables";
+@import "~@/assets/scss/abstracts/mixins";
+
+.el-collapse-item__content {
+	padding-bottom: 0;
+}
+
+.el-collapse-item__header {
+	background: $global-background-gray;
+	padding: $global-margin-medium;
+	font-size: $global-medium-font-size;
+	flex-direction: row-reverse;
+	justify-content: flex-end;
+	line-height: $global-line-height-small;
+	@include dont-break-out();
+}
+
+.el-collapse-item__wrap {
+	border: none;
+}
+
+.el-collapse-item__arrow {
+	margin-left: 0;
+}

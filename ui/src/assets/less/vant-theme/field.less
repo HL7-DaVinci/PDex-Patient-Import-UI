@@ -1,0 +1,21 @@
+@import "../vant-variables.less";
+
+.van-field {
+	padding: 0;
+
+	input {
+		padding: 0 15px;
+		height: 45px;
+		border: 1px solid @platinum;
+		border-radius: @border-radius-sm;
+		font-weight: @global-font-weight-medium;
+
+		&:focus {
+			border-color: @active-color;
+		}
+	}
+
+	&.error input {
+		border-color: @red;
+	}
+}

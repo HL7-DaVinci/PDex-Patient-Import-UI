@@ -1,0 +1,71 @@
+// Colors
+$night-rider: #333;
+$silver: #bdbdbd;
+$whisper: #e7e7e7;
+$white: #fff;
+$mirage: #1e2137;
+$pinkish-grey: #bdbdbd;
+$picton-blue: #3ea4dc;
+$alto: #c9c5c5;
+$black-russian: #050724;
+$dodger-blue: #0069FF;
+$torch-red: #ff2121;
+$white-smoke: rgba(239, 239, 239, 0.6);
+
+// Base Color
+$global-text-color: $night-rider;
+$global-muted-color: $silver;
+$global-background: $white;
+$global-background-gray: rgba(189, 189, 189, 0.15);
+$global-primary-color: $dodger-blue;
+
+// Base Text Color
+$global-text-color: $night-rider;
+$global-text-muted-color: $silver;
+
+// Font size
+$global-xxxlarge-font-size: 2.625rem; // 42px;
+$global-xxlarge-font-size: 1.5rem; // 24px
+$global-xlarge-font-size: 1.25rem; // 20px
+$global-large-font-size: 1.125rem; // 18px
+$global-medium-font-size: 1rem; // 16px
+$global-font-size: 0.875rem; // 14px
+$global-small-font-size: 0.75rem; // 12px
+$global-xsmall-font-size: 0.625rem; // 10px
+$global-xxsmall-font-size: 0.5rem; // 8px
+
+// Base Font for HTML
+$global-line-height: 1.4;
+$global-line-height-small: 1.172;
+$global-font-weight-light: 300;
+$global-font-weight-normal: 400;
+$global-font-weight-medium: 500;
+$global-font-weight-bold: 700;
+
+// Margins
+$global-margin-xlarge: 50px;
+$global-margin-large: 30px;
+$global-margin-medium: 20px;
+$global-margin: 15px;
+$global-margin-small: 10px;
+$global-margin-xsmall: 5px;
+
+// Breakpoints
+$global-breakpoint-small: 1024px;
+$global-breakpoint-medium: 1440px;
+$global-breakpoint-large: 1680px;
+$global-breakpoint-xlarge: 1920px;
+
+// Border
+$global-base-border-color: $whisper;
+$global-base-border: 1px solid $global-base-border-color;
+$global-border-radius: 19px;
+
+// Form
+$global-form-line-height: 25px;
+
+// Mobile theme variables
+$mobile-default-text-color: $white;
+$active-color: #2FB0F6;
+$platinum: rgba(231, 231, 231, 0.2);
+$mobile-background: $mirage;

@@ -1,0 +1,40 @@
+@import "~@/assets/scss/abstracts/variables";
+
+/* Font
+-------------------------- */
+$--font-path: '~element-plus/lib/theme-chalk/fonts';
+
+/* Color
+-------------------------- */
+$--color-primary: $global-primary-color;
+$--color-text-primary: $global-text-color;
+$--color-text-regular: $global-text-color;
+$--border-color-light: $global-base-border-color;
+$--background-color-base: $global-background;
+
+/* Button
+-------------------------- */
+$--button-font-weight: $global-font-weight-normal;
+$--button-border-radius: $global-border-radius;
+$--button-primary-font-color: $--color-text-primary;
+$--button-primary-background-color: $--background-color-base;
+$--button-padding-vertical: 10px;
+$--button-small-border-radius: $global-border-radius;
+
+/* Input
+-------------------------- */
+$--input-height: $global-form-line-height;
+
+/* Collapse
+--------------------------*/
+$--collapse-border-color: $global-base-border-color;
+$--collapse-header-height: 50px;
+
+/* Notification
+-------------------------- */
+$--notification-width: 450px;
+
+/* Dialog
+-------------------------- */
+$--dialog-title-font-size: $global-xlarge-font-size;
+$--dialog-padding-primary: $global-margin-large;

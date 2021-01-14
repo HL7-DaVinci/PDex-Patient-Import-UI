@@ -1,0 +1,67 @@
+{
+	"name": "mobile-simulator-ui",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build",
+		"test:unit": "vue-cli-service test:unit",
+		"lint": "vue-cli-service lint",
+		"lint:css": "stylelint ./src/**/*.{vue,scss} --fix",
+		"clean": "rimraf dist"
+	},
+	"dependencies": {
+		"axios": "0.21.0",
+		"core-js": "3.8.1",
+		"element-plus": "1.0.1-beta.5",
+		"jwt-decode": "3.1.2",
+		"lodash": "4.17.20",
+		"moment": "2.29.1",
+		"normalize.css": "8.0.1",
+		"splitpanes": "3.0.4",
+		"vant": "3.0.0-rc.2",
+		"vue": "3.0.4",
+		"vue-router": "4.0.1",
+		"vuex": "4.0.0-rc.2"
+	},
+	"devDependencies": {
+		"@types/chai": "4.2.14",
+		"@types/lodash": "4.14.166",
+		"@types/mocha": "5.2.7",
+		"@types/splitpanes": "2.2.0",
+		"@typescript-eslint/eslint-plugin": "2.34.0",
+		"@typescript-eslint/parser": "2.34.0",
+		"@vue/cli-plugin-babel": "4.5.9",
+		"@vue/cli-plugin-eslint": "4.5.9",
+		"@vue/cli-plugin-router": "4.5.9",
+		"@vue/cli-plugin-typescript": "4.5.9",
+		"@vue/cli-plugin-unit-mocha": "4.5.9",
+		"@vue/cli-plugin-vuex": "4.5.9",
+		"@vue/cli-service": "4.5.9",
+		"@vue/compiler-sfc": "3.0.4",
+		"@vue/eslint-config-typescript": "5.1.0",
+		"@vue/test-utils": "2.0.0-beta.12",
+		"babel-eslint": "10.1.0",
+		"babel-plugin-component": "1.1.1",
+		"babel-plugin-import": "1.13.3",
+		"chai": "4.2.0",
+		"compression-webpack-plugin": "7.0.0",
+		"eslint": "6.8.0",
+		"eslint-plugin-vue": "7.2.0",
+		"less": "3.12.2",
+		"less-loader": "7.1.0",
+		"rimraf": "3.0.2",
+		"sass": "1.26.5",
+		"sass-loader": "8.0.2",
+		"stylelint": "13.8.0",
+		"stylelint-config-standard": "19.0.0",
+		"stylelint-scss": "3.14.2",
+		"stylelint-webpack-plugin": "2.1.1",
+		"typescript": "3.9.3"
+	},
+	"postcss": {
+		"plugins": {
+			"autoprefixer": {}
+		}
+	}
+}
