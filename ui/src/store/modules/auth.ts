@@ -1,5 +1,5 @@
 import axios from "axios";
-import { login } from "../../api/api";
+import { login, authVerify } from "../../api/api";
 
 const state = {
 	token: localStorage.getItem("token") || "",
@@ -59,6 +59,18 @@ const actions = {
 			delete axios.defaults.headers.common.Authorization;
 			resolve();
 		});
+	},
+	authVerify({ commit }: any, payload: any) {
+		return authVerify(payload)
+			.then(({ data }) => {
+				if (!data.active) {
+					commit("authLogout");
+					localStorage.removeItem("token");
+					delete axios.defaults.headers.common.Authorization;
+
+					throw new Error("inactive token");
+				}
+			});
 	}
 };
 

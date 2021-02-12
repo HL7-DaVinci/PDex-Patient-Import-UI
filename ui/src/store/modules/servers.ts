@@ -76,11 +76,11 @@ const actions = {
 				throw error;
 			});
 	},
-	deleteServer(context: any, payload: any) {
+	deleteServer(context: any, id: any) {
 		context.commit("changeIsDeleting");
-		return deleteServer(payload.id)
+		return deleteServer(id)
 			.then((response: any) => {
-				context.commit("deleteServer", payload.id);
+				context.commit("deleteServer", id);
 
 				return response.data;
 			})

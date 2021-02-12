@@ -1,25 +1,25 @@
-import { removePayerData, importPayerData, getResourceOverview, getTotalResourceOverview, removeAllData } from "../../api/api";
+import { removePayerData, importPayerData, getResourcesOverview, getTotalResourcesOverview, removeAllData } from "../../api/api";
 
 const state = {
-	resourceOverview: [],
-	totalResourceOverview: []
+	resourcesOverview: [],
+	totalResourcesOverview: []
 };
 
 const getters = {
-	resourceOverview(state: any) {
-		return state.resourceOverview;
+	resourcesOverview(state: any) {
+		return state.resourcesOverview;
 	},
-	totalResourceOverview(state: any) {
-		return state.totalResourceOverview;
+	totalResourcesOverview(state: any) {
+		return state.totalResourcesOverview;
 	}
 };
 
 const mutations = {
-	setResourceOverview(state: any, data: any) {
-		state.resourceOverview = data;
+	setResourcesOverview(state: any, data: any) {
+		state.resourcesOverview = data;
 	},
-	setTotalResourceOverview(state: any, data: any) {
-		state.totalResourceOverview = data;
+	setTotalResourcesOverview(state: any, data: any) {
+		state.totalResourcesOverview = data;
 	}
 };
 
@@ -27,7 +27,7 @@ const actions = {
 	importPayerData({ commit }: any, payload: any) {
 		return importPayerData(payload.payerId, payload.patientId, payload.accessToken)
 			.then((response: any) => {
-				commit("setResourceOverview", response.data);
+				commit("setResourcesOverview", response.data);
 				return response.data;
 			})
 			.catch((error: any) => {
@@ -35,10 +35,10 @@ const actions = {
 				throw error;
 			});
 	},
-	getResourceOverview({ commit }: any, payerId: string) {
-		return getResourceOverview(payerId)
+	getResourcesOverview({ commit }: any, payerId: string) {
+		return getResourcesOverview(payerId)
 			.then((response: any) => {
-				commit("setResourceOverview", response.data);
+				commit("setResourcesOverview", response.data);
 				return response.data;
 			})
 			.catch((error: any) => {
@@ -46,10 +46,10 @@ const actions = {
 				throw error;
 			});
 	},
-	getTotalResourceOverview({ commit }: any) {
-		return getTotalResourceOverview()
+	getTotalResourcesOverview({ commit }: any) {
+		return getTotalResourcesOverview()
 			.then((response: any) => {
-				commit("setTotalResourceOverview", response.data);
+				commit("setTotalResourcesOverview", response.data);
 				return response.data;
 			})
 			.catch((error: any) => {

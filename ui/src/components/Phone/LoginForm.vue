@@ -109,6 +109,8 @@ export default defineComponent({
 
 	.logo {
 		margin: 50px 0;
+		align-self: center;
+		width: 130px;
 	}
 
 	.header {

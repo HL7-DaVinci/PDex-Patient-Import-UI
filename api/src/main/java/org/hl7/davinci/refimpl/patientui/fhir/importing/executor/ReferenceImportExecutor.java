@@ -83,7 +83,7 @@ public class ReferenceImportExecutor implements ImportExecutor {
         .ofType(CapabilityStatement.class)
         .execute();
     return references.parallelStream()
-        .map(reference -> capabilitiesLookup.getSupportedSearchParams(sourceCapabilities, reference)
+        .flatMap(reference -> capabilitiesLookup.getSupportedSearchParams(sourceCapabilities, reference)
             .parallelStream()
             .map(param -> sourceClient.search()
                 .forResource(reference.getResource())
@@ -93,7 +93,6 @@ public class ReferenceImportExecutor implements ImportExecutor {
                 .execute())
             .map(bundle -> resourceImporter.importBundle(endpoints, bundle, payer.getId()))
             .flatMap(List::stream))
-        .flatMap(Function.identity())
         .collect(Collectors.toList());
   }
 }

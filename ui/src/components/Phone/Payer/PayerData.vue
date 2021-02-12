@@ -5,13 +5,16 @@ import PayerHeader from "./PayerHeader.vue";
 import CollapseGroup from "@/components/Phone/CollapseGroup.vue";
 import ResourceList from "@/components/Phone/ResourceList.vue";
 import ProgressScreen from "../ProgressScreen.vue";
+import CustomDialogWithClose from "../CustomDialogWithClose.vue";
+import Mappings from "../../../utils/resourceMappings";
 
 export default defineComponent({
 	components: {
 		ResourceList,
 		CollapseGroup,
 		PayerHeader,
-		ProgressScreen
+		ProgressScreen,
+		CustomDialogWithClose
 	},
 	props: {
 		id: {
@@ -27,15 +30,27 @@ export default defineComponent({
 	},
 	computed: {
 		...mapGetters([
-			"resourceOverview",
+			"resourcesOverview",
 			"patient",
 			"activePayer",
 			"activePayerId"
-		])
+		]),
+		mappedPatient() {
+			if (this.patient) {
+				return Mappings.Patient.convert(this.patient);
+			}
+		}
+	},
+	watch: {
+		activePayer() {
+			if (this.activePayer) {
+				this.getPatientInfo();
+			}
+		}
 	},
 	created() {
 		this.getPatientInfo();
-		this.getResourceOverview();
+		this.getResourcesOverview();
 	},
 	methods: {
 		removePayerData() {
@@ -48,10 +63,12 @@ export default defineComponent({
 				});
 		},
 		getPatientInfo() {
-			this.$store.dispatch("getPatientInfo", this.activePayerId);
+			if (this.activePayer.sourcePatientId) {
+				this.$store.dispatch("getPatientInfo", { payerId: this.activePayerId, patientId: this.activePayer.sourcePatientId });
+			}
 		},
-		getResourceOverview() {
-			this.$store.dispatch("getResourceOverview", this.activePayerId);
+		getResourcesOverview() {
+			this.$store.dispatch("getResourcesOverview", this.activePayerId);
 		},
 		goToResource(resourceType){
 			this.$router.push(`/payer/${this.id}/${resourceType}`);
@@ -85,34 +102,24 @@ export default defineComponent({
 				<span>
 					Last Import: {{ $filters.formatDate(activePayer.lastImported) }}
 				</span>
-				<span class="action-wrap">
-					<a
-						href="#"
-						@click.prevent
-					>
-						<img
-							src="~@/assets/images/time-icon.svg"
-							alt="time"
-						>
-					</a>
-					<a
-						href="#"
-						@click.prevent
-					>
-						<img
-							src="~@/assets/images/refresh.svg"
-							alt="refresh"
-						>
-					</a>
-				</span>
+				<div class="action-wrap">
+					<van-button
+						:icon="require('@/assets/images/time-icon.svg')"
+						size="mini"
+					/>
+					<van-button
+						:icon="require('@/assets/images/refresh.svg')"
+						size="mini"
+					/>
+				</div>
 			</div>
 
 			<h2 class="section-header">
 				GENERAL INFO
 			</h2>
 			<CollapseGroup
-				v-if="Object.keys(patient).length"
-				:items="[patient]"
+				v-if="mappedPatient"
+				:items="[mappedPatient]"
 			>
 				<template #title="{ item }">
 					<div class="field patient-title">
@@ -151,8 +158,8 @@ export default defineComponent({
 				RESOURCES
 			</h2>
 			<ResourceList
-				v-if="resourceOverview.length > 0"
-				:resources="resourceOverview"
+				v-if="resourcesOverview.length > 0"
+				:resources="resourcesOverview"
 				@click-resource="goToResource"
 			/>
 			<div
@@ -160,11 +167,15 @@ export default defineComponent({
 				class="no-resources"
 			>
 				<div class="icon"></div>
-				<div class="primary">No data to display</div>
-				<div class="secondary">There are no resources from this payer.</div>
+				<div class="primary">
+					No data to display
+				</div>
+				<div class="secondary">
+					There are no resources from this payer.
+				</div>
 			</div>
 		</div>
-		<van-dialog
+		<CustomDialogWithClose
 			:show="showConfirm"
 			title="Are you sure?"
 			show-cancel-button
@@ -174,7 +185,7 @@ export default defineComponent({
 			@confirm="removePayerData"
 		>
 			Once you confirm, imported payer data will be permanently deleted.
-		</van-dialog>
+		</CustomDialogWithClose>
 		<ProgressScreen
 			v-if="isRemoving"
 			title="Clear Data in progress"
@@ -199,6 +210,7 @@ export default defineComponent({
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+
 		& > * {
 			flex-shrink: 0;
 		}
@@ -215,6 +227,7 @@ export default defineComponent({
 
 		.icon {
 			color: $pinkish-grey;
+
 			@include icon("~@/assets/images/no-data.svg", 100px);
 		}
 
@@ -251,7 +264,7 @@ export default defineComponent({
 	.action-wrap {
 		display: flex;
 
-		a:last-child {
+		::v-deep(.van-button:last-child) {
 			margin-left: $global-margin;
 		}
 	}
@@ -281,6 +294,8 @@ export default defineComponent({
 .value {
 	font-size: 18px;
 	font-weight: 400;
+
+	@include dont-break-out();
 }
 
 .patient-title {

@@ -33,7 +33,6 @@ hapi:
       implementation-description: Spring Boot Jpa Server Sample
       default-response-encoding: json
       e-tag-support: enabled
-      allow_cascading_deletes: true
       default-pretty-print: true
     validation:
       enabled: true

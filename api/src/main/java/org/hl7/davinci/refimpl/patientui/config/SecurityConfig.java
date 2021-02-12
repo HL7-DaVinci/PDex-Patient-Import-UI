@@ -69,9 +69,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .authorizeRequests()
         //allows API paths for authorization and right debug panel
-        .mvcMatchers("/api/auth/login", "/api/payers", "/api/payers/*")
+        .antMatchers("/api/payers/resources")
+        .authenticated()
+        .antMatchers("/api/auth/*", "/api/payers", "/api/payers/*")
         .permitAll()
-        .mvcMatchers("/api/**", "/api/payers/resources", "/fhir/**")
+        .antMatchers("/api/**", "/fhir/**")
         .authenticated();
 
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

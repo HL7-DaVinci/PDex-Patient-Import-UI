@@ -26,32 +26,53 @@ export default defineComponent({
 			required: true
 		}
 	},
-	data() {
+	data(this: any) {
 		return {
 			menuOpened: false,
-			resourceLoader: new ResourceLoader({ [this.id]: `/fhir/${this.resourceType}?_source=${this.id}` })
+			sortKey: "",
+			resourceLoader: this.makeResourceLoader(this.resourceType, this.id, "")
 		};
 	},
 	computed: {
 		...mapGetters([
 			"patient",
 			"servers",
-			"patientId"
+			"activePayer",
+			"resourcesOverview",
+			"activePayerId"
 		]),
 		rawResources() {
-			return this.resourceLoader.results[this.id];
+			return this.resourceLoader.results.currentPayer;
 		},
 		resources() {
 			return this.rawResources.map(Mappings[this.resourceType].convert);
 		},
+		mappedPatient() {
+			if (this.patient) {
+				return Mappings.Patient.convert(this.patient);
+			}
+		},
+		total() {
+			const resourceOverview = this.resourcesOverview.find(item => item.resourceType === this.resourceType);
+
+			return resourceOverview ? resourceOverview.count : "";
+		},
 		payer(): any {
 			return this.servers.find((item: any) => item.id === +this.id);
+		},
+		sortParams() {
+			return Mappings[this.resourceType].sortParams;
 		}
 	},
 	watch: {
 		payer() {
 			//todo - Should be reworked. App will be not ready while we are waiting for servers.
 			this.loadData();
+		},
+		sortKey(key) {
+			const param = key === "" ? "" : this.sortParams[key];
+			this.resourceLoader = this.makeResourceLoader(this.resourceType, this.id, param);
+			this.resourceLoader.load();
 		}
 	},
 	mounted() {
@@ -62,7 +83,7 @@ export default defineComponent({
 			if (this.payer && this.payer.lastImported !== null) {
 				this.getPatientInfo();
 				this.resourceLoader.load();
-				this.$store.dispatch("getResourceOverview", this.id);
+				this.$store.dispatch("getResourcesOverview", this.id);
 			}
 		},
 		getResourceTitle(res) {
@@ -70,9 +91,7 @@ export default defineComponent({
 			return value;
 		},
 		getPatientInfo() {
-			if (this.patientId !== this.payer.id) {
-				this.$store.dispatch("getPatientInfo", this.payer.id);
-			}
+			this.$store.dispatch("getPatientInfo", { payerId: this.payer.id, patientId: this.activePayer.sourcePatientId });
 		},
 		//
 		// To avoid patient name duplication
@@ -80,9 +99,12 @@ export default defineComponent({
 		omitPatientName(patientInfo) {
 			const { name, ...patientInfoWithoutName } = patientInfo;
 			return patientInfoWithoutName;
+		},
+		makeResourceLoader(resourceType, payerId, sortParam) {
+			return new ResourceLoader({ currentPayer: `/fhir/${resourceType}?_source=${payerId}&_sort=${sortParam}`});
 		}
 	}
-});
+})
 </script>
 
 <template>
@@ -90,41 +112,33 @@ export default defineComponent({
 		<ResourceHeader
 			@openSortMenu="menuOpened = true"
 			:resource-type="resourceType"
-			:id="patientId"
+			:id="activePayerId"
+			:total="total"
+			:sort-enabled="Object.keys(sortParams).length > 0"
 		/>
 		<InfiniteScrollArea
 			class="scroll-area"
 			@more="resourceLoader.load()"
 		>
 			<div class="last-imported">
-				{{ resources ? ` Last import: ${ $filters.formatDate(payer.lastImported) } ` : "" }}
-				<span class="action-wrap">
-					<a
-						href="#"
-						@click.prevent
-					>
-						<img
-							src="~@/assets/images/time-icon.svg"
-							alt="time"
-						>
-					</a>
-					<a
-						href="#"
-						@click.prevent
-					>
-						<img
-							src="~@/assets/images/refresh.svg"
-							alt="refresh"
-						>
-					</a>
-				</span>
+				{{ payer ? ` Last import: ${ $filters.formatDate(payer.lastImported) } ` : "" }}
+			  <div class="action-wrap">
+				<van-button
+					:icon="require('@/assets/images/time-icon.svg')"
+					size="mini"
+				/>
+				<van-button
+					:icon="require('@/assets/images/refresh.svg')"
+					size="mini"
+				/>
+			  </div>
 			</div>
 			<h2 class="section-header">
 				GENERAL INFO
 			</h2>
 			<CollapseGroup
-				v-if="Object.keys(patient).length"
-				:items="[patient]"
+				v-if="mappedPatient"
+				:items="[mappedPatient]"
 				class="section-content"
 			>
 				<template #title="{ item }">
@@ -196,12 +210,17 @@ export default defineComponent({
 				</template>
 			</CollapseGroup>
 		</InfiniteScrollArea>
-		<SortMenu v-model:show="menuOpened" />
+		<SortMenu
+			v-model:show="menuOpened"
+			v-model:value="sortKey"
+			:options="Object.keys(sortParams)"
+		/>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 @import "~@/assets/scss/abstracts/variables.scss";
+@import "~@/assets/scss/abstracts/mixins.scss";
 
 .resource {
 	background-color: $black-russian;
@@ -223,15 +242,10 @@ export default defineComponent({
 		.action-wrap {
 			display: flex;
 
-			a:last-child {
+			::v-deep(.van-button:last-child) {
 				margin-left: $global-margin;
 			}
 		}
-	}
-
-	.label {
-		font-size: $global-small-font-size;
-		font-weight: $global-font-weight-light;
 	}
 
 	.resource-title {
@@ -257,6 +271,8 @@ export default defineComponent({
 	.value {
 		font-size: $global-large-font-size;
 		font-weight: $global-font-weight-normal;
+
+		@include dont-break-out();
 	}
 
 	.no-data {

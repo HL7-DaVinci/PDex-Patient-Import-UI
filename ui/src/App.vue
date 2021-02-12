@@ -40,6 +40,7 @@ export default defineComponent({
 			}
 		});
 		if (this.token) {
+			this.$store.dispatch("authVerify", { token: this.token }).then(null, () => this.$router.push("/login"));
 			axios.defaults.headers.common.Authorization = `Bearer ${this.token}`;
 		}
 	}

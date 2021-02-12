@@ -2,6 +2,7 @@ package org.hl7.davinci.refimpl.patientui.fhir.importing;
 
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
 import org.springframework.stereotype.Component;
@@ -69,7 +70,7 @@ public class ResourceImporter {
         .map(resource -> importResource(endpoints.getTargetClient(), resource, payerId))
         .collect(Collectors.toList());
 
-    if (bundle.getLink(Bundle.LINK_NEXT) != null) {
+    if (bundle.getLink(IBaseBundle.LINK_NEXT) != null) {
       Bundle nextPage = endpoints.getSourceClient()
           .loadPage()
           .next(bundle)

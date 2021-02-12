@@ -2,9 +2,14 @@
 import { defineComponent } from "vue";
 import ActionMenu from "./ActionMenu.vue";
 import ProgressScreen from "./ProgressScreen.vue";
+import CustomDialogWithClose from "./CustomDialogWithClose.vue";
 
 export default defineComponent({
-	components: { ProgressScreen, ActionMenu },
+	components: {
+		ProgressScreen,
+		ActionMenu,
+		CustomDialogWithClose
+	},
 	emits: ["add-payer-data"],
 	data() {
 		return {
@@ -36,10 +41,11 @@ export default defineComponent({
 			<div class="header-text">
 				Your Data
 			</div>
-			<a
-				class="menu-icon"
+			<van-button
+				:icon="require('@/assets/images/icon-three-dots.svg')"
+				size="mini"
 				@click="menuOpened = !menuOpened"
-			></a>
+			/>
 		</div>
 
 		<div
@@ -96,7 +102,7 @@ export default defineComponent({
 				</van-button>
 			</div>
 		</div>
-		<van-dialog
+		<CustomDialogWithClose
 			:show="showConfirm"
 			title="Are you sure?"
 			show-cancel-button
@@ -106,7 +112,7 @@ export default defineComponent({
 			@confirm="removeAllData"
 		>
 			Once you confirm, all imported payer data will be permanently deleted.
-		</van-dialog>
+		</CustomDialogWithClose>
 		<ProgressScreen
 			v-if="isRemoving"
 			title="Clear All Data in progress"
@@ -150,14 +156,10 @@ export default defineComponent({
 			font-weight: $global-font-weight-medium;
 		}
 
-		.menu-icon {
-			cursor: pointer;
-			position: absolute;
-			right: 15px;
-			bottom: 0;
-			color: $active-color;
-
-			@include icon("~@/assets/images/icon-three-dots.svg", 40px);
+		::v-deep(.van-icon__image) {
+			height: 4px;
+			width: 16px;
+			vertical-align: super;
 		}
 	}
 

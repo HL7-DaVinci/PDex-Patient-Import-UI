@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, nextTick } from "vue";
 import ServerForm from "./ServerForm.vue";
 import NoServers from "./NoServers.vue";
 
@@ -9,7 +9,8 @@ export default defineComponent({
 	data() {
 		return {
 			showAddServerForm: false,
-			activeServers: []
+			activeServers: "",
+			hasUnsavedChanges: false
 		};
 	},
 	computed: {
@@ -17,9 +18,21 @@ export default defineComponent({
 			return this.$store.getters.servers;
 		}
 	},
+	watch: {
+		servers(val, oldVal) {
+			if (val.length > oldVal.length) {
+				nextTick(() => this.activeServers = val[val.length - 1].id);
+			}
+		},
+		showAddServerForm() {
+			if (this.showAddServerForm) {
+				this.collapseSection();
+			}
+		}
+	},
 	methods: {
-		collapseSection(el: string) {
-			this.activeServers = this.activeServers.filter(item => item !== el);
+		collapseSection() {
+			this.activeServers = "";
 		}
 	}
 });
@@ -33,7 +46,7 @@ export default defineComponent({
 			</h2>
 			<el-button
 				v-if="servers.length || showAddServerForm"
-				:disabled="showAddServerForm"
+				:disabled="showAddServerForm || hasUnsavedChanges"
 				@click="showAddServerForm = true"
 			>
 				Add New Server
@@ -43,17 +56,29 @@ export default defineComponent({
 			<el-collapse
 				v-if="servers.length"
 				v-model="activeServers"
+				accordion
 			>
 				<el-collapse-item
 					v-for="item in servers"
 					:key="item.id"
 					:title="item.name"
 					:name="item.id"
+					:disabled="hasUnsavedChanges"
 				>
 					<ServerForm
-						:data="item"
+						:id="item.id"
+						:data="{
+							name: item.name,
+							fhirServerUri: item.fhirServerUri,
+							clientId: item.clientId,
+							scope: item.scope,
+							authorizeUri: item.authorizeUri,
+							tokenUri: item.tokenUri
+						}"
+						:last-imported="item.lastImported"
 						:edit-mode="true"
-						@hide-form="collapseSection(item.id)"
+						@hide-form="collapseSection"
+						@changed="hasUnsavedChanges = $event"
 					/>
 				</el-collapse-item>
 			</el-collapse>
@@ -64,6 +89,7 @@ export default defineComponent({
 			<ServerForm
 				v-if="showAddServerForm"
 				@hide-form="showAddServerForm = false"
+				@changed="hasUnsavedChanges = $event"
 			/>
 		</div>
 	</div>

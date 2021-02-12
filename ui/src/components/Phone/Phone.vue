@@ -62,7 +62,7 @@ $mobile-phone-inner-border-radius: 30px;
 	display: flex;
 	justify-content: space-between;
 	width: 376px; // width of phone container 400 - 12 * 2
-	padding: $global-margin $global-margin-large;
+	padding: $global-margin $global-margin-large 0;
 
 	img {
 		margin-left: 5px;

@@ -17,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addViewControllers(ViewControllerRegistry registry) {
     registry.addViewController(NOT_FOUND_PATH)
+        .setStatusCode(HttpStatus.OK)
         .setViewName("forward:/index.html");
   }
 

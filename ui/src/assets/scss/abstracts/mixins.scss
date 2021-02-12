@@ -1,7 +1,7 @@
-@mixin icon($src, $size) {
+@mixin icon($src, $w, $h: $w) {
 	display: inline-block;
-	width: $size;
-	height: $size;
+	width: $w;
+	height: $h;
 	mask-image: url($src);
 	-webkit-mask-image: url($src);
 	background-color: currentColor;
@@ -16,4 +16,10 @@
 	word-wrap: break-word;
 	word-break: break-word;
 	hyphens: auto;
+}
+
+@mixin text-ellipsis() {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }

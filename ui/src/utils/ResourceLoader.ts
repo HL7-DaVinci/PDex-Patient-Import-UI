@@ -7,13 +7,15 @@ export default class ResourceLoader {
 	_nextUrl: string | null;
 	loading: boolean;
 	results: any;
+	meta: any;
 
-	constructor(searches, batchSize=10) {
+	constructor(searches, batchSize=20) {
 		this._searches = searches;
 		this._batchSize = batchSize;
 		this._currentSearchIdx = 0;
 		this.loading = false;
 		this.results = Object.fromEntries(Object.keys(searches).map(key => [key, []]));
+		this.meta = Object.fromEntries(Object.keys(searches).map(key => [key, {}]));
 	}
 
 	get finished() {
@@ -48,10 +50,11 @@ export default class ResourceLoader {
 
 	_handle(request) {
 		this.loading = true;
-		request.then(resp => {
-			const newEntries = resp.data.entry ? resp.data.entry.map(e => e.resource) : [];
+		request.then(({ data }) => {
+			const newEntries = data.entry ? data.entry.map(e => e.resource) : [];
 			this.results[this._currentSearchId].push(...newEntries);
-			const nextLink = resp.data.link.find(l => l.relation === "next");
+			this.meta[this._currentSearchId] = { total: data.total, id: data.id, meta: data.meta };
+			const nextLink = data.link.find(l => l.relation === "next");
 			if (nextLink) {
 				this._nextUrl = nextLink.url.replace(/\*/, "");
 			} else {

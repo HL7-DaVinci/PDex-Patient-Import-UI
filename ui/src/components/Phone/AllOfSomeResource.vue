@@ -21,7 +21,7 @@ export default defineComponent({
 	},
 	computed: {
 		resourceCount() {
-			const item = this.$store.getters.totalResourceOverview.find(x => x.resourceType === this.resourceType);
+			const item = this.$store.getters.totalResourcesOverview.find(x => x.resourceType === this.resourceType);
 			return item ? item.count : "";
 		},
 		payers() {
@@ -48,7 +48,7 @@ export default defineComponent({
 	created() {
 		this.resourceLoader = new ResourceLoader(this.searchByPayer, 20);
 		this.resourceLoader.load();
-		this.$store.dispatch("getTotalResourceOverview");
+		this.$store.dispatch("getTotalResourcesOverview");
 	},
 	methods: {
 		loadMore() {
@@ -90,12 +90,13 @@ export default defineComponent({
 				:key="payer.id"
 			>
 				<h2 class="section-header">
-					<span>{{ payer.name }}</span>
-					<img
-						src="~@/assets/images/arrow.svg"
-						class="arrow"
+					<span class="payer-name">{{ payer.name }}</span>
+					<van-button
+						:icon="require('@/assets/images/arrow-right.svg')"
+						class="icon btn-arrow-right"
+						size="mini"
 						@click="goToPayer(payer.id)"
-					>
+					/>
 				</h2>
 
 				<CollapseGroup
@@ -112,7 +113,8 @@ export default defineComponent({
 
 					<template #default="{ item }">
 						<div
-							v-for="field in getResourceFields(item)"
+							v-for="(field, index) in getResourceFields(item)"
+							:key="index"
 							class="field"
 						>
 							<div class="label">
@@ -133,7 +135,8 @@ export default defineComponent({
 </template>
 
 <style lang="scss" scoped>
-@import "~@/assets/scss/abstracts/abstracts.scss";
+@import "~@/assets/scss/abstracts/abstracts";
+@import "~@/assets/scss/abstracts/mixins";
 
 .all-of-resource {
 	height: 100%;
@@ -161,18 +164,23 @@ export default defineComponent({
 		font-size: 13px;
 		font-weight: $global-font-weight-light;
 		margin: 0;
-		padding: 25px 0 0 $global-margin-large;
+		padding: 25px $global-margin-large 0;
 		text-transform: uppercase;
 		position: sticky;
 		z-index: 1;
 		top: -1px;
 
-		.arrow {
-			transform: rotate(180deg);
+		.btn-arrow-right {
 			position: absolute;
-			right: $global-margin-large;
-			top: $global-margin-medium;
-			cursor: pointer;
+			right: 30px;
+			bottom: 8px;
+		}
+
+		.payer-name {
+			display: block;
+			padding-right: 25px;
+
+			@include text-ellipsis();
 		}
 	}
 
@@ -199,6 +207,8 @@ export default defineComponent({
 	.value {
 		font-size: $global-large-font-size;
 		font-weight: $global-font-weight-normal;
+
+		@include dont-break-out();
 	}
 
 	.no-data {

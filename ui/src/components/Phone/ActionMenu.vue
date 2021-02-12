@@ -77,7 +77,7 @@ export default defineComponent({
 	}
 
 	::v-deep(.van-cell) {
-		padding: 10px 30px;
+		padding: 20px 40px;
 		border-bottom: 1px solid $platinum;
 	}
 
@@ -94,20 +94,20 @@ export default defineComponent({
 		color: $torch-red;
 
 		.icon {
-			@include icon("~@/assets/images/icon-trash.svg", 40px);
+			@include icon("~@/assets/images/icon-trash.svg", 14px, 15px);
 		}
 	}
 
 	.logout .icon {
 		color: $active-color;
 
-		@include icon("~@/assets/images/icon-logout.svg", 40px);
+		@include icon("~@/assets/images/icon-logout.svg", 15px);
 	}
 
 	.close .icon {
 		color: $active-color;
 
-		@include icon("~@/assets/images/icon-x.svg", 40px);
+		@include icon("~@/assets/images/close-icon.svg", 15px);
 	}
 }
 </style>

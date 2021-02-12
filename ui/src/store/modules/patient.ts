@@ -1,19 +1,14 @@
 import { getPatientInfo, getAllPatients } from "../../api/api";
-import Mapper from "../../utils/resourceMappings.js";
 
 const state = {
-	patient: {},
-	patientId: "",
+	patient: null,
 	allPatients: []
 };
 
 
 const getters = {
 	patient(state: any) {
-		return !state.patient.total ? state.patient : Mapper.Patient.convert(state.patient.entry[0].resource);
-	},
-	patientId(state: any) {
-		return state.patientId;
+		return state.patient;
 	},
 	allPatients(state: any) {
 		return state.allPatients;
@@ -26,17 +21,13 @@ const mutations = {
 	},
 	setAllPatients(state: any, data: any) {
 		state.allPatients = data;
-	},
-	setPatientId(state: any, data: any) {
-		state.patientId = data;
 	}
 };
 
 const actions = {
-	getPatientInfo({ commit }: any, id: string) {
-		return getPatientInfo(id).then(({ data }) => {
+	getPatientInfo({ commit }: any, payload: any) {
+		return getPatientInfo(payload).then(({ data }) => {
 			commit("setPatientInfo", data);
-			commit("setPatientId", id);
 		});
 	},
 	getAllPatients({ commit }: any) {

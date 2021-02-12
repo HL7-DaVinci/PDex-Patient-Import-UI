@@ -10,16 +10,16 @@ export default defineComponent({
 			required: true
 		},
 		id: {
-			type: String,
+			type: [String, Number],
 			required: true
-		}
-	},
-	computed: {
-		...mapGetters([
-			"resourceOverview"
-		]),
-		resource() {
-			return this.resourceOverview.find(item => item.resourceType === this.resourceType);
+		},
+		total: {
+			type: [String, Number],
+			default: ""
+		},
+		sortEnabled: {
+			type: Boolean,
+			default: true
 		}
 	}
 });
@@ -28,21 +28,31 @@ export default defineComponent({
 <template>
 	<div class="header">
 		<van-nav-bar
-			:title="`${resourceType} (${ resource ? resource.count: '' })`"
+			:title="`${resourceType} (${total})`"
 		>
 			<template #left>
-				<img
-					src="~@/assets/images/arrow.svg"
-					alt="Return to previous screen"
+				<van-button
+					:icon="require('@/assets/images/arrow-left.svg')"
+					size="mini"
 					@click="$router.push(`/payer/${id}`)"
-				>
+				/>
 			</template>
+
+			<!-- <template #right>
+				<van-button
+					:icon="require('@/assets/images/slider.svg')"
+					size="mini"
+					:disabled="!sortEnabled"
+					@click="$emit('open-sort-menu')"
+				/>
+			</template> -->
 		</van-nav-bar>
 	</div>
 </template>
 
 <style lang="scss" scoped>
 @import "~@/assets/scss/abstracts/variables.scss";
+@import "~@/assets/scss/abstracts/abstracts";
 
 .header {
 	height: 80px;

@@ -1,0 +1,6 @@
+@import "~@/assets/scss/abstracts/mixins";
+
+.el-notification__content,
+.el-notification__title {
+	@include dont-break-out();
+}

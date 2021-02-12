@@ -76,20 +76,19 @@ export default defineComponent( {
 				v-if="importedPayers.length"
 				#left
 			>
-				<img
-					src="~@/assets/images/arrow.svg"
-					alt="Return to previous screen"
+				<van-button
+					:icon="require('@/assets/images/arrow-left.svg')"
+					size="mini"
 					@click="$emit('hide-payer-select')"
-				>
+				/>
 			</template>
 			<template #right>
-				<van-cell
-					clickable
+				<van-button
 					class="logout"
 					@click="handleLogout"
 				>
 					Log Out
-				</van-cell>
+				</van-button>
 			</template>
 		</van-nav-bar>
 	</div>
@@ -156,11 +155,12 @@ export default defineComponent( {
 	align-items: flex-end;
 
 	.logout {
+		font-size: $global-large-font-size;
+		font-weight: $global-font-weight-normal;
+		color: $active-color;
 		padding: 0;
-
-		::v-deep(.van-cell__value--alone) {
-			color: $active-color;
-		}
+		border: none;
+		background: none;
 	}
 }
 
@@ -173,10 +173,14 @@ export default defineComponent( {
 
 	.logo {
 		margin-bottom: $global-margin-xlarge;
+		width: 125px;
+		align-self: center;
 	}
 
 	.no-data-logo {
 		margin-bottom: $global-margin-large;
+		width: 100px;
+		align-self: center;
 	}
 
 	.no-data-header,

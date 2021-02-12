@@ -18,18 +18,18 @@ export default defineComponent({
 			:title="title"
 		>
 			<template #left>
-				<img
-					src="~@/assets/images/arrow.svg"
-					alt="Return to previous screen"
+				<van-button
+					:icon="require('@/assets/images/arrow-left.svg')"
+					size="mini"
 					@click="$router.push('/')"
-				>
+				/>
 			</template>
 			<template #right>
-				<img
-					src="~@/assets/images/trash.svg"
-					alt="Delete payer"
+				<van-button
+					:icon="require('@/assets/images/icon-trash.svg')"
+					size="mini"
 					@click="$emit('showRemovePayerDialog')"
-				>
+				/>
 			</template>
 		</van-nav-bar>
 	</div>
@@ -37,6 +37,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "~@/assets/scss/abstracts/variables.scss";
+@import "~@/assets/scss/abstracts/abstracts";
 
 .header {
 	height: 80px;

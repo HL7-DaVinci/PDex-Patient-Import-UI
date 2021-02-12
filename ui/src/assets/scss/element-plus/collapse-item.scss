@@ -12,6 +12,7 @@
 	flex-direction: row-reverse;
 	justify-content: flex-end;
 	line-height: $global-line-height-small;
+
 	@include dont-break-out();
 }
 

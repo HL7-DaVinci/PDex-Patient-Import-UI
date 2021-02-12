@@ -1,8 +1,9 @@
 import Maybe from "./Maybe.js";
 import _ from "@/vendors/lodash";
 
-const Mapping = ({ fields }) => ({
+const Mapping = ({ fields, sortParams={} }) => ({
 	fields,
+	sortParams,
 	convert: fhir =>
 		_.mapValues(fields, field => ({
 			label: field.label,
@@ -39,6 +40,7 @@ export default {
 						.value
 			}
 		},
+		sortParams: {}
 	}),
 
 
@@ -82,6 +84,12 @@ export default {
 				extract: fhir => Maybe(fhir.interpretation).then(xs => xs[0]).then(showCodeableConcept).value
 			}
 		},
+		sortParams: {
+			"Code": "code",
+			"Effective Date": "date",
+			"Value": "value-concept,value-date,value-quantity,value-string",
+			"Category": "category"
+		}
 	}),
 
 
@@ -119,12 +127,19 @@ export default {
 				extract: fhir => Maybe(fhir.verificationStatus).then(showCodeableConcept).value
 			}
 		},
+		sortParams: {
+			"Code": "code",
+			"Onset": "onset-age,onset-date,onset-info",
+			"Category": "category",
+			"Severity": "severity",
+			"Verification status": "verification-status"
+		}
 	}),
 
 
 	Encounter: Mapping({
 		fields: {
-			classCode: {
+			"class": {
 				label: "Class",
 				extract: fhir => Maybe(fhir.class).then(showCoding).value
 			},
@@ -141,6 +156,12 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Class": "class",
+			"Period": "date",
+			"Reason code": "reason-code",
+			"Status": "status"
+		}
 	}),
 
 
@@ -167,6 +188,11 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Medication": "code",
+			"Authored on": "authoredon",
+			"Status": "status"
+		}
 	}),
 
 
@@ -181,6 +207,10 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Medication": "code",
+			"Status": "status"
+		}
 	}),
 
 
@@ -195,6 +225,10 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Medication": "code",
+			"Status": "status"
+		}
 	}),
 
 
@@ -232,6 +266,12 @@ export default {
 				extract: fhir => Maybe(fhir.clinicalStatus).then(showCodeableConcept).value
 			}
 		},
+		sortParams: {
+			"Code": "code", // this param considers .reaction.substance in absence of code
+			"Criticality": "criticality",
+			"Category": "category",
+			"Clinical status": "clinical-status"
+		}
 	}),
 
 
@@ -258,6 +298,12 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Code": "code",
+			"Category": "category",
+			"Reason code": "reason-code",
+			"Status": "status"
+		}
 	}),
 
 
@@ -288,6 +334,13 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Code": "code",
+			"Category": "category",
+			"Effective date": "date",
+			"Conclusion code": "conclusion",
+			"Status": "status"
+		}
 	}),
 
 
@@ -310,6 +363,11 @@ export default {
 				extract: fhir => fhir.status
 			}
 		},
+		sortParams: {
+			"Vaccine code": "vaccine-code",
+			"Occurence": "date",
+			"Status": "status"
+		}
 	}),
 
 
@@ -328,6 +386,10 @@ export default {
 				extract: fhir => fhir.description
 			}
 		},
+		sortParams: {
+			"Category": "category",
+			"Period": "date"
+		}
 	}),
 
 
@@ -346,6 +408,10 @@ export default {
 				extract: fhir => Maybe(fhir.period).then(showPeriod).value
 			}
 		},
+		sortParams: {
+			"Category": "category",
+			"Period": "date"
+		}
 	}),
 
 
@@ -386,6 +452,11 @@ export default {
 				extract: fhir => Maybe(fhir.note).then(x => x[0]).then(note => note.time).value
 			}
 		},
+		sortParams: {
+			"Category": "category",
+			"Start": "start-date",
+			"Target due": "target-date"
+		}
 	}),
 
 
@@ -412,6 +483,9 @@ export default {
 				extract: fhir => Maybe(fhir.mitigation).then(x => x[0]).then(x => x.action).then(showCodeableConcept).value
 			}
 		},
+		sortParams: {
+			"Code": "code"
+		}
 	}),
 
 
@@ -430,6 +504,10 @@ export default {
 				extract: fhir => Maybe(fhir.relationship).then(showCodeableConcept).value
 			}
 		},
+		sortParams: {
+			"Date": "date",
+			"Relationship": "relationship"
+		}
 	}),
 
 
@@ -452,6 +530,11 @@ export default {
 				extract: fhir => Maybe(fhir.securityLabel).then(x => x[0]).then(showCodeableConcept).value
 			}
 		},
+		sortParams: {
+			"Type": "type",
+			"Status": "status",
+			"Security label": "security-label"
+		}
 	}),
 };
 

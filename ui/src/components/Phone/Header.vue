@@ -17,11 +17,11 @@ export default defineComponent({
 			:title="title"
 		>
 			<template #left>
-				<img
-					src="~@/assets/images/arrow.svg"
-					alt="Return to previous screen"
+				<van-button
+					:icon="require('@/assets/images/arrow-left.svg')"
+					size="mini"
 					@click="$emit('back')"
-				>
+				/>
 			</template>
 		</van-nav-bar>
 	</div>
@@ -29,6 +29,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "~@/assets/scss/abstracts/variables.scss";
+@import "~@/assets/scss/abstracts/abstracts";
 
 .header {
 	height: 80px;

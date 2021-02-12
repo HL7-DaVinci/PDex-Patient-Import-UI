@@ -12,4 +12,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaRepositories(basePackages = {"org.hl7.davinci.refimpl.patientui.repository"})
 @EntityScan(basePackages = {"org.hl7.davinci.refimpl.patientui.model"})
-public class JPAConfiguration {}
+public class JpaConfig {}

@@ -22,6 +22,7 @@
 		color: @active-color;
 		background-color: @mirage;
 		border: 1px solid @active-color;
+		margin-right: 15px;
 	}
 
 	&__confirm {
@@ -32,8 +33,6 @@
 
 	&__confirm,
 	&__cancel {
-		width: 140px;
-		flex: none;
 		font-size: @global-large-font-size;
 		font-weight: @global-font-weight-medium;
 	}
@@ -42,11 +41,6 @@
 		display: flex;
 		justify-content: space-between;
 		padding: 0 25px;
-	}
-
-	& .van-hairline--top::after,
-	& .van-hairline--left::after{
-		border: none;
 	}
 }
 

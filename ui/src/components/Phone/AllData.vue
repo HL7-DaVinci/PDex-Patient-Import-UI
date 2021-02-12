@@ -9,7 +9,7 @@ export default defineComponent({
 	components: { Header, ResourceList, CollapseGroup },
 	computed: {
 		resources() {
-			return this.$store.getters.totalResourceOverview;
+			return this.$store.getters.totalResourcesOverview;
 		},
 		payers() {
 			return this.$store.getters.importedPayers;
@@ -28,7 +28,7 @@ export default defineComponent({
 		}
 	},
 	created() {
-		this.$store.dispatch("getTotalResourceOverview");
+		this.$store.dispatch("getTotalResourcesOverview");
 		this.$store.dispatch("getAllPatients");
 	},
 	methods: {
@@ -150,6 +150,8 @@ export default defineComponent({
 		font-size: $global-large-font-size;
 		font-weight: $global-font-weight-normal;
 		padding: $global-margin-medium 0;
+
+		@include dont-break-out();
 	}
 
 	.field:not(:first-child) {
@@ -165,6 +167,8 @@ export default defineComponent({
 	.value {
 		font-size: $global-large-font-size;
 		font-weight: $global-font-weight-normal;
+
+		@include dont-break-out();
 	}
 
 	.no-data {
@@ -182,6 +186,7 @@ export default defineComponent({
 
 		.icon {
 			color: $pinkish-grey;
+
 			@include icon("~@/assets/images/no-data.svg", 100px);
 		}
 

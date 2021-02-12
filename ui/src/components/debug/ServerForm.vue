@@ -7,8 +7,12 @@ const DEFAULT_SERVER = { name: "", fhirServerUri: "", clientId: "", scope: "open
 
 export default defineComponent({
 	name: "ServerForm",
-	components: {ServerConfirmDialog},
+	components: { ServerConfirmDialog },
 	props: {
+		id: {
+			type: [String, Number],
+			default: null
+		},
 		data: {
 			type: Object,
 			default: () => ({ ...DEFAULT_SERVER })
@@ -16,9 +20,13 @@ export default defineComponent({
 		editMode: {
 			type: Boolean,
 			default: false
+		},
+		lastImported: {
+			type: String,
+			default: null
 		}
 	},
-	emits: ["hide-form"],
+	emits: ["hide-form", "changed"],
 	data() {
 		return {
 			form: { ...DEFAULT_SERVER } as any,
@@ -45,13 +53,13 @@ export default defineComponent({
 			return !_.isEqual(this.form, this.data);
 		},
 		disableField(): boolean {
-			return this.isSaving || (this.editMode && this.data.lastImported !== null);
+			return this.isSaving || (this.editMode && this.lastImported !== null);
 		},
 		deleteDialogOptions(): any {
 			return {
 				title: "Delete Server",
 				primaryText: `Are you sure you want to delete "${this.data.name}" server?`,
-				secondaryText: "Deleting this server will erase all data that has been imported from it.",
+				secondaryText: this.lastImported !== null ? "Deleting this server will erase all data that has been imported from it." : "",
 				primaryButton: "Delete",
 				secondaryButton: "Cancel"
 			}
@@ -69,10 +77,22 @@ export default defineComponent({
 			return this.$store.getters.activePayer;
 		}
 	},
+	watch: {
+		hasChanges() {
+			this.$emit("changed", this.hasChanges)
+		}
+	},
 	mounted() {
 		this.form = { ...this.form, ...this.data };
+		this.scrollToElement();
 	},
 	methods: {
+		//
+		// scroll to the active element
+		//
+		scrollToElement() {
+			this.$el.scrollIntoView({ behavior: 'smooth' });
+		},
 		//
 		// Add new server or save changes, show notification on success save
 		//
@@ -92,7 +112,7 @@ export default defineComponent({
 					this.isSaving = false;
 				});
 			} else {
-				this.$store.dispatch("changeServer", this.form)
+				this.$store.dispatch("changeServer", { id: this.id, data: this.form })
 				.then(() => {
 					this.$notify({
 						title: "Success",
@@ -115,7 +135,7 @@ export default defineComponent({
 		// Delete server, show notification about success delete, hide form
 		//
 		deleteServer() {
-			this.$store.dispatch("deleteServer", this.form)
+			this.$store.dispatch("deleteServer", this.id)
 			.then(() => {
 				// means active payer was deleted so we do a redirect on home page
 				if (!this.activePayer) {
@@ -148,7 +168,9 @@ export default defineComponent({
 		//
 		cancelEdit() {
 			this.showCancelDialog = false;
-			this.$emit('hide-form')
+			if (!this.editMode) {
+				this.$emit("hide-form");
+			}
 			// todo: reset form using this.$refs.form.resetFields()
 			this.form = {...this.form, ...this.data};
 		}
@@ -229,22 +251,19 @@ export default defineComponent({
 			</el-form-item>
 		</el-form>
 		<div
-			v-if="editMode"
+			v-if="editMode && lastImported !== null"
 			class="footnote"
 		>
-			<div v-if="form.lastImported !== null">
-				Server parameters cannot be edited if the data was imported from it.
-			</div>
 			<div>Deleting server will erase all data that has been imported from it.</div>
+			<div>Server parameters cannot be edited if the data was imported from it.</div>
 		</div>
 		<div class="footer">
 			<el-button
-				type="primary"
 				:disabled="isFormInvalid || !hasChanges"
 				:loading="isSaving"
 				@click="onSave"
 			>
-				Save Changes
+				{{ isSaving ? "Saving Changes" : "Save Changes"}}
 			</el-button>
 			<el-button
 				v-if="editMode"
