@@ -15,7 +15,7 @@ export const changeServer = ({ id, data }) => axios.put(`/api/payers/${id}`, dat
 export const getServerToken = (payerId: string, authCode: string) => axios.get(`/api/payers/${payerId}/token`, {
 	params: {
 		authCode,
-		redirectUri: "http://localhost:8080"
+		redirectUri: "https://localhost:8443"
 	}
 });
 

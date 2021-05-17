@@ -62,7 +62,7 @@ export default defineComponent( {
 										&scope=${this.selectedPayer.scope}
 										&state=${createUUID()}
 										&response_type=code
-										&redirect_uri=http://localhost:8080
+										&redirect_uri=https://localhost:8443
 									`;
 		}
 	}

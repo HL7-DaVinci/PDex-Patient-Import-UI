@@ -3,6 +3,7 @@ package org.hl7.davinci.refimpl.patientui.config.fhir;
 import ca.uhn.fhir.context.FhirContext;
 import lombok.RequiredArgsConstructor;
 import org.hl7.davinci.refimpl.patientui.config.fhir.dao.ExtendedDaoConfig;
+import org.hl7.davinci.refimpl.patientui.fhir.CustomRestfulClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +18,9 @@ public class FhirConfig {
 
   @PostConstruct
   public void configureFhirContext() {
-    fhirContext.getRestfulClientFactory()
-        .setSocketTimeout(60000);
+    CustomRestfulClientFactory clientFactory = new CustomRestfulClientFactory(fhirContext);
+    clientFactory.setSocketTimeout(60000);
+    fhirContext.setRestfulClientFactory(clientFactory);
   }
 
   @Bean

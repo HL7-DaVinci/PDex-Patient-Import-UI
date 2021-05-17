@@ -4,10 +4,10 @@ module.exports = {
 	devServer: {
 		proxy: {
 			"/api": {
-				target: "http://localhost:8080"
+				target: "https://localhost:8443"
 			},
 			"/fhir": {
-				target: "http://localhost:8080"
+				target: "https://localhost:8443"
 			}
 		}
 	},

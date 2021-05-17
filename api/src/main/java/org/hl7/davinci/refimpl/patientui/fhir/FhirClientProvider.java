@@ -32,9 +32,9 @@ public class FhirClientProvider {
    * @return the {@link IGenericClient}
    */
   public IGenericClient newLocalClient() {
-    // TODO: Will not work with https. Schema needs to be externalized or database populated directly.
+    // TODO: Schema needs to be externalized or database populated directly.
     // In future there will be no need in sample data since everything will be imported directly from Payer Sandboxes.
-    String localClientUri = "http://localhost:" + environment.getProperty("local.server.port") + "/fhir";
+    String localClientUri = "https://localhost:" + environment.getProperty("local.server.port") + "/fhir";
     // Since we are calling our own secured endpoint - a security tokenResponse needs to be provided.
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken("user", "user"));

@@ -1,3 +1,10 @@
+server:
+  ssl:
+    key-store: classpath:keystore/patient-ui.p12
+    key-store-password: patient-ui-pass
+    key-store-type: pkcs12
+    key-alias: patient-ui
+  port: 8443
 spring:
   jpa:
     hibernate:

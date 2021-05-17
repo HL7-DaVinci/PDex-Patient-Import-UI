@@ -91,7 +91,9 @@ export default defineComponent({
 			return value;
 		},
 		getPatientInfo() {
-			this.$store.dispatch("getPatientInfo", { payerId: this.payer.id, patientId: this.activePayer.sourcePatientId });
+			if (this.activePayer.sourcePatientId) {
+				this.$store.dispatch("getPatientInfo", { payerId: this.payer.id, patientId: this.activePayer.sourcePatientId });
+			}
 		},
 		//
 		// To avoid patient name duplication
