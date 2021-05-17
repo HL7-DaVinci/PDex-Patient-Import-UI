@@ -21,7 +21,7 @@ mvn clean install
 # Try it
 Run app with:
 ```sh
-java -jar target/patient-ui-2.0-SNAPSHOT.jar
+java -jar api/target/patient-ui-2.0-RELEASE.jar
 ```
 Go to https://localhost:8443
 
