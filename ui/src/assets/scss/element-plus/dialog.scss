@@ -1,4 +1,5 @@
 @import "~@/assets/scss/abstracts/variables";
+@import "~@/assets/scss/abstracts/mixins";
 
 .el-dialog__header {
 	font-weight: $global-font-weight-medium;
@@ -6,4 +7,6 @@
 
 .el-dialog__body {
 	padding: $global-margin-small $global-margin-large;
+
+	@include dont-break-out();
 }

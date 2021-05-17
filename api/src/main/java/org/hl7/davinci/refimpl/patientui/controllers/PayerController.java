@@ -1,15 +1,15 @@
 package org.hl7.davinci.refimpl.patientui.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.hl7.davinci.refimpl.patientui.controllers.constant.SessionAttributes;
 import org.hl7.davinci.refimpl.patientui.dto.ImportInfoDto;
-import org.hl7.davinci.refimpl.patientui.dto.ImportRequestDto;
 import org.hl7.davinci.refimpl.patientui.dto.PayerDto;
 import org.hl7.davinci.refimpl.patientui.dto.ResourceInfoDto;
-import org.hl7.davinci.refimpl.patientui.dto.validation.Import;
+import org.hl7.davinci.refimpl.patientui.dto.ResponseBodyDto;
+import org.hl7.davinci.refimpl.patientui.services.ImportRequestService;
 import org.hl7.davinci.refimpl.patientui.services.ImportService;
 import org.hl7.davinci.refimpl.patientui.services.PatientDataService;
 import org.hl7.davinci.refimpl.patientui.services.PayerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.groups.Default;
+import javax.servlet.http.HttpSession;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * REST API controller to work with information related to payer.
@@ -37,12 +37,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("api/payers")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class PayerController {
 
   private final PayerService payerService;
   private final ImportService importService;
   private final PatientDataService patientDataService;
+  private final ImportRequestService importRequestService;
 
   /**
    * Endpoint to retrieve list of all payers.
@@ -84,7 +85,6 @@ public class PayerController {
    * @return updated payer
    */
   @PutMapping({"/{id}"})
-  @ResponseStatus(value = HttpStatus.OK)
   public PayerDto updatePayer(@PathVariable Long id, @Validated @RequestBody PayerDto payerDto) {
     return payerService.updatePayer(id, payerDto);
   }
@@ -95,7 +95,7 @@ public class PayerController {
    * @param id identification of payer that should be deleted
    */
   @DeleteMapping({"/{id}"})
-  @ResponseStatus(value = HttpStatus.NO_CONTENT)
+  @ResponseStatus(value = HttpStatus.ACCEPTED)
   public void deletePayer(@PathVariable Long id) {
     payerService.deletePayer(id);
   }
@@ -103,15 +103,15 @@ public class PayerController {
   /**
    * An endpoint imports the patient data from payer's FHIR server.
    *
-   * @param id            the ID of the payer
-   * @param importRequest holds the access token to the payer's server and the ID of patient to import
-   * @return a list of resource types that were imported
+   * @param id       the ID of the payer
+   * @param authCode the access code to the token of the Payer's server
    */
   @PostMapping({"/{id}/import"})
-  @ResponseStatus(value = HttpStatus.OK)
-  public List<ResourceInfoDto> importPatientData(@PathVariable Long id,
-      @Validated(value = {Default.class, Import.class}) @RequestBody ImportRequestDto importRequest) {
-    return importService.importPatientData(id, importRequest.getPatientId(), importRequest.getAccessToken());
+  @ResponseStatus(value = HttpStatus.ACCEPTED)
+  public void importPatientData(@PathVariable Long id, @RequestParam String authCode, @RequestParam String authState,
+      HttpSession httpSession) {
+    assertAuthState(httpSession, authState);
+    importService.importPatientData(id, authCode);
   }
 
   /**
@@ -119,16 +119,15 @@ public class PayerController {
    *
    * @param id            the ID of the payer
    * @param resourceTypes the types of resources to refresh
-   * @param importRequest the access token to the payer's server
-   * @return a list of resource types that were refreshed
+   * @param authCode      the access code to the token of the Payer's server
    */
   @PostMapping({"/{id}/refresh"})
-  @ResponseStatus(value = HttpStatus.OK)
-  public List<ImportInfoDto> refreshPatientData(@PathVariable Long id,
-      @RequestParam(name = "resourceType", required = false) List<String> resourceTypes,
-      @Valid @RequestBody ImportRequestDto importRequest) {
-    return importService.refreshPatientData(id, resourceTypes == null ? Collections.emptyList() : resourceTypes,
-        importRequest.getAccessToken());
+  @ResponseStatus(value = HttpStatus.ACCEPTED)
+  public void refreshPatientData(@PathVariable Long id,
+      @RequestParam(name = "resourceType", required = false) List<String> resourceTypes, @RequestParam String authCode,
+      @RequestParam String authState, HttpSession httpSession) {
+    assertAuthState(httpSession, authState);
+    importService.refreshPatientData(id, resourceTypes == null ? Collections.emptyList() : resourceTypes, authCode);
   }
 
   /**
@@ -167,6 +166,15 @@ public class PayerController {
   }
 
   /**
+   * An endpoint removes all the imported data for all the payers.
+   */
+  @PostMapping("/clear")
+  @ResponseStatus(value = HttpStatus.NO_CONTENT)
+  public void clearData() {
+    patientDataService.clearData(null);
+  }
+
+  /**
    * An endpoint returns a list of all resources ever imported for all payers.
    *
    * @return {@link ResourceInfoDto} list
@@ -174,5 +182,24 @@ public class PayerController {
   @GetMapping("/resources")
   public List<ResourceInfoDto> getImportedResources() {
     return patientDataService.getImportedResources();
+  }
+
+  /**
+   * Returns the response body of the given Payer request.
+   *
+   * @param payerId   the ID of the Payer request was made for
+   * @param requestId the ID of request
+   * @return {@link ResponseBodyDto}
+   */
+  @GetMapping("/{payerId}/import-requests/{requestId}/content")
+  public ResponseBodyDto getImportRequestContent(@PathVariable Long payerId, @PathVariable String requestId) {
+    return importRequestService.getResponseBody(payerId, requestId);
+  }
+
+  private void assertAuthState(HttpSession httpSession, String authState) {
+    if (!Objects.equals(httpSession.getAttribute(SessionAttributes.OAUTH_STATE), authState)) {
+      throw new IllegalStateException("The OAuth state value does not match expected.");
+    }
+    httpSession.removeAttribute(SessionAttributes.OAUTH_STATE);
   }
 }

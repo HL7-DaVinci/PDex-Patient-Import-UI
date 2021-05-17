@@ -1,0 +1,22 @@
+@import "~@/assets/scss/abstracts/variables";
+
+.el-autocomplete-suggestion {
+	&__wrap {
+		padding: $global-margin-xsmall 0;
+	}
+
+	&__list {
+		max-height: 150px;
+		overflow: hidden;
+
+		li {
+			line-height: $global-form-line-height;
+			font-size: $global-small-font-size;
+			padding: 0 $global-margin-small;
+		}
+
+		li:hover {
+			background-color: $white-smoke-3;
+		}
+	}
+}

@@ -5,7 +5,7 @@ module.exports = {
 	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:vue/recommended"
+		"plugin:vue/vue3-recommended"
 	],
 	"rules": {
 		"vue/comment-directive": 0,
@@ -65,9 +65,10 @@ module.exports = {
 				"normal": "never"
 			}
 		}],
-		"vue/no-v-model-argument": 0
+		"vue/no-v-model-argument": 0,
+		"no-empty": 0
 	},
 	"parserOptions": {
-		"parser": "babel-eslint"
+		"parser": "@typescript-eslint/parser"
 	}
 };

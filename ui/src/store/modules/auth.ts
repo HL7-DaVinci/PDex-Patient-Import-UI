@@ -1,82 +1,73 @@
-import axios from "axios";
-import { login, authVerify } from "../../api/api";
+import { login, authVerify } from "@/api/api";
+import { VuexModule, Module, Action, Mutation, getModule } from "vuex-module-decorators";
+import { getToken, removeToken, setToken, setRequestAuthHeader, removeRequestAuthHeader } from "@/utils/utils";
+import store from "@/store";
+import { AuthLoginPayload, AuthVerifyPayload } from "@/types";
 
-const state = {
-	token: localStorage.getItem("token") || "",
-	status: ""
-};
+export interface IAuth {
+	token: string,
+	status: string
+}
 
-const getters = {
-	//todo: should I create State type?
-	isAuthenticated(state: any): Boolean {
-		return !!state.token;
-	},
-	token(state: any): String {
-		return state.token;
+@Module({ dynamic: true, store, name: "auth" })
+class Auth extends VuexModule implements IAuth {
+	token: string = getToken() || ""
+	status: string = ""
+
+	get isAuthenticated(): boolean {
+		return !!this.token;
 	}
-};
 
-const mutations = {
-	authRequest(state: any) {
-		state.status = "loading";
-	},
-	authSuccess(state: any, token: String) {
-		state.status = "success";
-		state.token = token;
-	},
-	authError(state: any) {
-		state.status = "error";
-	},
-	authLogout(state: any) {
-		state.token = "";
-		state.status = "";
+	@Mutation
+	setStatus(status: string): void {
+		this.status = status;
 	}
-};
 
-const actions = {
-	authRequest({ commit }: any, payload: any) {
-		commit("authRequest");
+	@Mutation
+	setToken(token: string): void {
+		this.token = token;
+	}
 
-		return login(payload)
-			.then(res => {
-				const { token } = res.data;
+	@Action
+	async login(payload: AuthLoginPayload): Promise<void> {
+		this.setStatus("loading");
 
-				localStorage.setItem("token", token);
-				axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-				commit("authSuccess", token);
-			})
-			.catch(err => {
-				commit("authError", err);
-				localStorage.removeItem("token");
+		try {
+			const data = await login(payload);
+			setToken(data.token);
+			setRequestAuthHeader(`Bearer ${data.token}`);
+			this.setStatus("success");
+			this.setToken(data.token);
+		} catch (err) {
+			this.setStatus("error");
+			removeToken();
+			throw err;
+		}
+	}
 
-				throw err;
-			});
-	},
-	authLogout({ commit }: any) {
+	@Action
+	async logout(): Promise<void> {
 		return new Promise(resolve => {
-			commit("authLogout");
-			localStorage.removeItem("token");
-			delete axios.defaults.headers.common.Authorization;
+			this.setStatus("");
+			this.setToken("");
+			removeToken();
+			removeRequestAuthHeader();
 			resolve();
 		});
-	},
-	authVerify({ commit }: any, payload: any) {
-		return authVerify(payload)
-			.then(({ data }) => {
-				if (!data.active) {
-					commit("authLogout");
-					localStorage.removeItem("token");
-					delete axios.defaults.headers.common.Authorization;
-
-					throw new Error("inactive token");
-				}
-			});
 	}
-};
 
-export default {
-	state,
-	getters,
-	mutations,
-	actions
-};
+	@Action
+	async authVerify(payload: AuthVerifyPayload): Promise<void> {
+		const data = await authVerify(payload);
+
+		if (!data.active) {
+			this.setStatus("");
+			this.setToken("");
+			removeToken();
+			removeRequestAuthHeader();
+			throw new Error("inactive token");
+		}
+	}
+}
+
+export const AuthModule = getModule(Auth);

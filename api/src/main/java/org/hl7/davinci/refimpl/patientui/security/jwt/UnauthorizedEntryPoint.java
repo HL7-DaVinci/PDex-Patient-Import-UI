@@ -11,6 +11,8 @@ import java.io.IOException;
 
 /**
  * Component, which should handle unauthorized requests to the application.
+ *
+ * @author Mykhailo Stefantsiv
  */
 @Component
 @Slf4j
@@ -20,7 +22,7 @@ public class UnauthorizedEntryPoint implements AuthenticationEntryPoint {
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
       throws IOException {
     log.warn("Unauthorized error: {}", authException.getMessage());
-    //Just returning 401 as a response code for all unauthorized requests.
+    // Just returning 401 as a response code for all unauthorized requests.
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
   }
 }

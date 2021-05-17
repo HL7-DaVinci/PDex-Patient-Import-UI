@@ -51,10 +51,6 @@ $side-gutter: 30px;
 		background-color: $mirage;
 	}
 
-	::v-deep(.van-collapse-item:not(:last-child)) {
-		border-bottom: 1px solid $platinum;
-	}
-
 	::v-deep(.van-collapse-item__content) {
 		margin: 0;
 		padding: 0;
@@ -66,6 +62,10 @@ $side-gutter: 30px;
 
 	::v-deep(.van-cell__title) {
 		margin-right: 10px;
+	}
+
+	::v-deep(.van-collapse-item:not(:last-child)) {
+		border-bottom: 1px solid $platinum;
 	}
 
 	.hidden-content {

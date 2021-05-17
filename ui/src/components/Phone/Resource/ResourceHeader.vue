@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
 
 export default defineComponent({
 	name: "ResourceHeader",
@@ -9,7 +8,7 @@ export default defineComponent({
 			type: String,
 			required: true
 		},
-		id: {
+		payerId: {
 			type: [String, Number],
 			required: true
 		},
@@ -21,7 +20,8 @@ export default defineComponent({
 			type: Boolean,
 			default: true
 		}
-	}
+	},
+	emits: ["open-sort-menu"]
 });
 </script>
 
@@ -34,18 +34,18 @@ export default defineComponent({
 				<van-button
 					:icon="require('@/assets/images/arrow-left.svg')"
 					size="mini"
-					@click="$router.push(`/payer/${id}`)"
+					@click="$router.push(`/payer/${payerId}`)"
 				/>
 			</template>
 
-			<!-- <template #right>
+			<template #right>
 				<van-button
 					:icon="require('@/assets/images/slider.svg')"
 					size="mini"
 					:disabled="!sortEnabled"
 					@click="$emit('open-sort-menu')"
 				/>
-			</template> -->
+			</template>
 		</van-nav-bar>
 	</div>
 </template>

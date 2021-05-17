@@ -1,20 +1,17 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
-import Import from "../views/Import.vue";
 import Login from "../views/Login.vue";
-import store from "../store";
 import PayerData from "../components/Phone/Payer/PayerData.vue";
 import AllData from "../components/Phone/AllData.vue";
 import AllOfSomeResource from "../components/Phone/AllOfSomeResource.vue";
 import ResourceData from "../components/Phone/Resource/ResourceData.vue";
+import { AuthModule } from "@/store/modules/auth";
+import { PayersModule } from "@/store/modules/payers";
+import Import from "@/components/Phone/Import/Import.vue";
+import AuthRedirectPage from "../components/Phone/AuthRedirectPage.vue";
 
 const isAuthenticated = (to: any, from: any, next: any) => {
-	if (store.getters.isAuthenticated) {
-		// if there is some code in path that mean te import data for new payer started
-		if(to.query.code) {
-			next("/import");
-			return;
-		}
+	if (AuthModule.isAuthenticated) {
 		next();
 		return;
 	}
@@ -22,7 +19,7 @@ const isAuthenticated = (to: any, from: any, next: any) => {
 };
 
 const shouldBeAuthenticated = (to: any, from: any, next: any) => {
-	if (!store.getters.isAuthenticated) {
+	if (!AuthModule.isAuthenticated) {
 		next();
 		return;
 	}
@@ -34,43 +31,55 @@ const routes: Array<RouteRecordRaw> = [
 		path: "/",
 		name: "Home",
 		component: Home,
-		beforeEnter: isAuthenticated
+		beforeEnter: isAuthenticated,
+		meta: { depth: 1 }
 	},
 	{
 		path: "/import",
 		name: "Import",
-		component: Import
+		component: Import,
+		meta: { depth: 2 }
+	},
+	{
+		path: "/auth-redirect",
+		name: "AuthRedirect",
+		component: AuthRedirectPage
 	},
 	{
 		path: "/login",
 		name: "Login",
 		component: Login,
-		beforeEnter: shouldBeAuthenticated
+		beforeEnter: shouldBeAuthenticated,
+		meta: { depth: 0 }
 	},
 	{
 		path: "/payer/:id",
 		name: "Payer",
 		component: PayerData,
 		props: true,
-		beforeEnter: isAuthenticated
+		beforeEnter: isAuthenticated,
+		meta: { depth: 3 }
 	} ,
 	{
 		path: "/all-data",
 		component: AllData,
-		beforeEnter: isAuthenticated
+		beforeEnter: isAuthenticated,
+		meta: { depth: 2 }
 	},
 	{
 		path: "/all-data/:resourceType",
 		component: AllOfSomeResource,
 		beforeEnter: isAuthenticated,
-		props: true
+		props: true,
+		meta: { depth: 3 }
 	},
 	{
 		path: "/payer/:id/:resourceType",
 		name: "Resource",
 		component: ResourceData,
 		props: true,
-		beforeEnter: isAuthenticated
+		beforeEnter: isAuthenticated,
+		meta: { transition: "slide", depth: 4 }
 	}
 ];
 
@@ -81,8 +90,9 @@ const router = createRouter({
 
 // if router include payer id it will set it as active if not then reset activePayerId
 router.beforeEach((to, from, next) => {
-	const payerId = to.params.id ? +to.params.id : "";
-	store.dispatch("setActivePayerId", payerId);
+	const payerId = to.params.id ? +to.params.id : null;
+	PayersModule.updateActivePayerId(payerId);
+
 	next();
 });
 

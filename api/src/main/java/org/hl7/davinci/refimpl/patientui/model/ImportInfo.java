@@ -1,7 +1,6 @@
 package org.hl7.davinci.refimpl.patientui.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -19,7 +18,6 @@ import java.time.OffsetDateTime;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 public class ImportInfo extends BaseEntity {
 
   @Column(nullable = false)

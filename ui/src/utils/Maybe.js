@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-prototype-builtins
 const unlift = x => maybeProto.isPrototypeOf(x) ? x.value : x;
 
 

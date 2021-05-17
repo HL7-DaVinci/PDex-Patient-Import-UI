@@ -12,6 +12,10 @@ export default defineComponent({
 		description: {
 			type: String,
 			default: "Please wait, it may take a few minutes."
+		},
+		percentage: {
+			type: Number,
+			required: true
 		}
 	}
 });
@@ -25,7 +29,7 @@ export default defineComponent({
 		<p class="description">
 			{{ description }}
 		</p>
-		<ProgressBar />
+		<ProgressBar :percentage="percentage" />
 	</div>
 </template>
 

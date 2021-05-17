@@ -2,7 +2,17 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-	name: "CustomDialogWithClose"
+	name: "CustomDialogWithClose",
+	setup(_, { emit }) {
+		// component emits will remove all event handlers from $attrs that are listed inside
+		// we don't want that, cause we are firing cancel from this component and want to listen cancel from original dialog
+		// eslint-disable-next-line
+		const handleClose = (): void => emit("cancel");
+
+		return {
+			handleClose
+		};
+	}
 });
 </script>
 
@@ -14,7 +24,7 @@ export default defineComponent({
 			<button
 				class="header-button"
 				type="button"
-				@click="$emit('cancel')"
+				@click="handleClose"
 			>
 				<span class="close-icon"></span>
 			</button>
@@ -50,6 +60,6 @@ export default defineComponent({
 .close-icon {
 	color: $active-color;
 
-	@include icon("~@/assets/images/close-icon.svg", 15px);
+	@include mask-icon("~@/assets/images/close-icon.svg", 15px);
 }
 </style>

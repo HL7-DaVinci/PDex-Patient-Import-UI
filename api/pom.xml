@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.hl7.davinci.refimpl.patientui</groupId>
     <artifactId>patient-ui</artifactId>
-    <version>2.0-RELEASE</version>
+    <version>2.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>api</artifactId>
@@ -47,6 +47,14 @@
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-messaging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+    <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-spring-boot-starter</artifactId>
       <version>${hapi_version}</version>
@@ -66,9 +74,9 @@
       <artifactId>h2</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.jsonwebtoken</groupId>
-      <artifactId>jjwt</artifactId>
-      <version>0.9.1</version>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>3.13.0</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

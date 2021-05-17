@@ -14,15 +14,16 @@ export default defineComponent({
 		},
 		options: {
 			type: Array,
-			default: []
+			default: () => []
 		}
 	},
+	emits: ["update:value", "update:show"],
 	data() {
 		return {
 			activeIcon: require("../../../assets/images/done.svg"),
 			inactiveIcon: ""
 		};
-	},
+	}
 });
 </script>
 
@@ -35,7 +36,9 @@ export default defineComponent({
 		>
 			<van-cell>
 				<div class="cell-content menu-header">
-					<div class="label">SORT BY :</div>
+					<div class="label">
+						SORT BY :
+					</div>
 					<span
 						class="icon"
 						@click="$emit('update:show', false)"
@@ -46,17 +49,18 @@ export default defineComponent({
 
 			<div class="options">
 				<van-cell
-					clickable
 					v-for="(option, index) in options"
 					:key="index"
+					clickable
 				>
 					<van-checkbox
 						:name="option"
-						:modelValue="value === option"
+						:model-value="value === option"
 						@update:modelValue="$emit('update:value', $event ? option : '')"
 					>
 						<template #icon="props">
 							<img
+								alt=""
 								class="img-icon"
 								:src="props.checked ? activeIcon : inactiveIcon"
 							>
@@ -106,7 +110,7 @@ export default defineComponent({
 			cursor: pointer;
 			color: $active-color;
 
-			@include icon("~@/assets/images/close-icon.svg", 15px);
+			@include mask-icon("~@/assets/images/close-icon.svg", 15px);
 		}
 	}
 

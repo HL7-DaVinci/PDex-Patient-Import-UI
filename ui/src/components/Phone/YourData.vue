@@ -1,8 +1,13 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import ActionMenu from "./ActionMenu.vue";
 import ProgressScreen from "./ProgressScreen.vue";
 import CustomDialogWithClose from "./CustomDialogWithClose.vue";
+import { PayerModule } from "@/store/modules/payer";
+import { Payer } from "@/types";
+import { PayersModule } from "@/store/modules/payers";
+import { goToImportOrHome, showDefaultErrorNotification } from "@/utils/utils";
+import { CallsModule } from "@/store/modules/calls";
 
 export default defineComponent({
 	components: {
@@ -11,32 +16,53 @@ export default defineComponent({
 		CustomDialogWithClose
 	},
 	emits: ["add-payer-data"],
-	data() {
-		return {
-			menuOpened: false,
-			showConfirm: false,
-			isRemoving: false
+	setup() {
+		const menuOpened = ref<boolean>(false);
+		const showConfirm = ref<boolean>(false);
+		const isRemoving = ref<boolean>(false);
+
+		const payerList = computed<Payer[]>(() => PayersModule.importedPayers);
+		const percentage = computed<number>(() => PayerModule.progressStatus?.type === "CLEAR" ? PayerModule.progressPercentage : 0);
+
+		const removeAllData = async (): Promise<void> => {
+			showConfirm.value = false;
+			isRemoving.value = true;
+
+			const progress = await PayerModule.removeAllData();
+			if (progress.status === "FAILED") {
+				showDefaultErrorNotification();
+			}
+
+			if (progress.status === "COMPLETED") {
+				CallsModule.clearPreviousCallList();
+
+				setTimeout(async () => {
+					await PayersModule.loadPayers();
+					await goToImportOrHome();
+				}, 1000);
+			}
 		};
-	},
-	computed: {
-		payerList(): any {
-			return this.$store.getters.servers.filter((payer: any) => payer.lastImported !== null);
-		}
-	},
-	methods: {
-		removeAllData() {
-			this.showConfirm = false;
-			this.isRemoving = true;
-			this.$store.dispatch("removeAllData").finally(() => {
-				this.$store.dispatch("loadServers").finally(() => this.isRemoving = false);
-			});
-		}
+
+		const checkProgressStatus = () => {
+			PayerModule.progressStatus && PayerModule.progressStatus.type === "CLEAR" && PayerModule.progressStatus.status !== "COMPLETED" ? isRemoving.value = true : isRemoving.value = false;
+		};
+
+		checkProgressStatus();
+
+		return {
+			menuOpened,
+			showConfirm,
+			isRemoving,
+			payerList,
+			removeAllData,
+			percentage
+		};
 	}
 });
 </script>
 
 <template>
-	<div class="payers-list">
+	<div class="your-data">
 		<div class="header">
 			<div class="header-text">
 				Your Data
@@ -48,8 +74,14 @@ export default defineComponent({
 			/>
 		</div>
 
+		<ProgressScreen
+			v-if="isRemoving"
+			:percentage="percentage"
+			title="Clear All Data in progress"
+			description="Please wait, it may take a few seconds to delete all your information."
+		/>
 		<div
-			v-if="!isRemoving"
+			v-else
 			class="scroll-area"
 		>
 			<van-cell-group v-if="payerList.length > 1">
@@ -57,7 +89,7 @@ export default defineComponent({
 					is-link
 					to="/all-data"
 				>
-					<div class="title">
+					<div class="cell-title">
 						<div class="main">
 							All Data
 						</div>
@@ -74,14 +106,15 @@ export default defineComponent({
 			>
 				By Payer
 			</h2>
-			<van-cell-group>
+
+			<van-cell-group class="payer-list">
 				<van-cell
 					v-for="(payer, index) in payerList"
 					:key="index"
 					is-link
 					:to="`/payer/${payer.id}`"
 				>
-					<div class="title">
+					<div class="cell-title">
 						<div class="main">
 							{{ payer.name }}
 						</div>
@@ -102,6 +135,7 @@ export default defineComponent({
 				</van-button>
 			</div>
 		</div>
+
 		<CustomDialogWithClose
 			:show="showConfirm"
 			title="Are you sure?"
@@ -113,32 +147,29 @@ export default defineComponent({
 		>
 			Once you confirm, all imported payer data will be permanently deleted.
 		</CustomDialogWithClose>
-		<ProgressScreen
-			v-if="isRemoving"
-			title="Clear All Data in progress"
-			description="Please wait, it may take a few seconds to delete all your information."
+		<ActionMenu
+			v-model:show="menuOpened"
+			@clear-all="showConfirm = true"
 		/>
 	</div>
-
-	<ActionMenu
-		v-model:show="menuOpened"
-		@clear-all="showConfirm = true"
-	/>
 </template>
 
 <style lang="scss" scoped>
 @import "~@/assets/scss/abstracts/abstracts";
 
-.payers-list {
+.your-data {
 	background-color: $black-russian;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 
-	.scroll-area {
-		flex: 1;
-		overflow: overlay;
-		padding-top: $global-margin-medium;
+	::v-deep(.van-cell) {
+		padding: 20px $global-margin-large;
+		border-bottom: 1px solid $platinum;
+
+		&:first-child {
+			border-top: 1px solid $platinum;
+		}
 	}
 
 	.header {
@@ -163,30 +194,7 @@ export default defineComponent({
 		}
 	}
 
-	.section-header {
-		height: 50px;
-		background-color: $black-russian;
-		font-size: 13px;
-		font-weight: $global-font-weight-light;
-		padding: 25px 0 0 $global-margin-large;
-		text-transform: uppercase;
-		margin: 0;
-	}
-
-	.actions {
-		margin: $global-margin-large $global-margin-large;
-	}
-
-	::v-deep(.van-cell) {
-		padding: 20px 30px;
-		border-bottom: 1px solid $platinum;
-
-		&:first-child {
-			border-top: 1px solid $platinum;
-		}
-	}
-
-	.title {
+	.cell-title {
 		.main {
 			font-size: $global-large-font-size;
 			font-weight: $global-font-weight-normal;
@@ -197,6 +205,32 @@ export default defineComponent({
 			font-weight: $global-font-weight-light;
 			margin-top: 8px;
 		}
+	}
+
+	.section-header {
+		height: 50px;
+		background-color: $black-russian;
+		font-size: 13px;
+		font-weight: $global-font-weight-light;
+		padding: 25px 0 $global-margin-small $global-margin-large;
+		text-transform: uppercase;
+		margin: 0;
+	}
+
+	.scroll-area {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		overflow: overlay;
+		padding-top: $global-margin-medium;
+	}
+
+	.payer-list {
+		overflow: overlay;
+	}
+
+	.actions {
+		margin: 25px $global-margin-large;
 	}
 }
 </style>

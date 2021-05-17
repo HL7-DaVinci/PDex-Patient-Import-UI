@@ -20,13 +20,16 @@ $--button-primary-font-color: $--color-text-primary;
 $--button-primary-background-color: $--background-color-base;
 $--button-padding-vertical: 10px;
 $--button-small-border-radius: $global-border-radius;
+$--button-small-font-size: $global-font-size;
+$--button-small-padding-vertical: 4px;
 
 /* Input
 -------------------------- */
 $--input-height: $global-form-line-height;
+$--input-placeholder-color: $grey;
 
 /* Collapse
---------------------------*/
+-------------------------- */
 $--collapse-border-color: $global-base-border-color;
 $--collapse-header-height: 50px;
 
@@ -38,3 +41,10 @@ $--notification-width: 450px;
 -------------------------- */
 $--dialog-title-font-size: $global-xlarge-font-size;
 $--dialog-padding-primary: $global-margin-large;
+
+/* Switch
+-------------------------- */
+$--switch-on-color: $global-background;
+$--switch-off-color: $global-background;
+$--switch-height: $global-form-line-height;
+$--switch-button-size: 19px;

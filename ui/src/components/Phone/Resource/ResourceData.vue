@@ -1,20 +1,25 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, computed, watch } from "vue";
 import ResourceHeader from "./ResourceHeader.vue";
 import SortMenu from "./SortMenu.vue";
-import { mapGetters } from "vuex";
-import ResourceLoader from "../../../utils/ResourceLoader";
-import InfiniteScrollArea from "../InfiniteScrollArea.vue";
-import CollapseGroup from "../CollapseGroup.vue";
-import Mappings from "../../../utils/resourceMappings.js";
+import ResourceLoader from "@/utils/ResourceLoader";
+import InfiniteScrollArea from "@/components/Phone/InfiniteScrollArea.vue";
+import CollapseGroup from "@/components/Phone/CollapseGroup.vue";
+import Mappings from "@/utils/resourceMappings.js";
+import { PatientModule } from "@/store/modules/patient";
+import { PayerModule } from "@/store/modules/payer";
+import { PayersModule } from "@/store/modules/payers";
+import _ from "@/vendors/lodash";
+import { showDefaultErrorNotification } from "@/utils/utils";
+import PayerRefreshToolbar from "@/components/Phone/PayerRefreshToolbar.vue";
 
 export default defineComponent({
-	name: "ResourceData",
-	components:{
+	components: {
 		CollapseGroup,
 		InfiniteScrollArea,
 		ResourceHeader,
-		SortMenu
+		SortMenu,
+		PayerRefreshToolbar
 	},
 	props: {
 		id: {
@@ -26,115 +31,133 @@ export default defineComponent({
 			required: true
 		}
 	},
-	data(this: any) {
-		return {
-			menuOpened: false,
-			sortKey: "",
-			resourceLoader: this.makeResourceLoader(this.resourceType, this.id, "")
-		};
-	},
-	computed: {
-		...mapGetters([
-			"patient",
-			"servers",
-			"activePayer",
-			"resourcesOverview",
-			"activePayerId"
-		]),
-		rawResources() {
-			return this.resourceLoader.results.currentPayer;
-		},
-		resources() {
-			return this.rawResources.map(Mappings[this.resourceType].convert);
-		},
-		mappedPatient() {
-			if (this.patient) {
-				return Mappings.Patient.convert(this.patient);
+	setup(props) {
+		const activePayer = computed(() => PayersModule.activePayer);
+		watch(activePayer, payer => {
+			if (payer && payer.sourcePatientId) {
+				PatientModule.getPatient({ payerId: payer.id, patientId: payer.sourcePatientId });
+				PayerModule.getResourcesOverview(payer.id);
 			}
-		},
-		total() {
-			const resourceOverview = this.resourcesOverview.find(item => item.resourceType === this.resourceType);
+		}, { immediate: true });
 
-			return resourceOverview ? resourceOverview.count : "";
-		},
-		payer(): any {
-			return this.servers.find((item: any) => item.id === +this.id);
-		},
-		sortParams() {
-			return Mappings[this.resourceType].sortParams;
-		}
-	},
-	watch: {
-		payer() {
-			//todo - Should be reworked. App will be not ready while we are waiting for servers.
-			this.loadData();
-		},
-		sortKey(key) {
-			const param = key === "" ? "" : this.sortParams[key];
-			this.resourceLoader = this.makeResourceLoader(this.resourceType, this.id, param);
-			this.resourceLoader.load();
-		}
-	},
-	mounted() {
-		this.loadData();
-	},
-	methods: {
-		loadData() {
-			if (this.payer && this.payer.lastImported !== null) {
-				this.getPatientInfo();
-				this.resourceLoader.load();
-				this.$store.dispatch("getResourcesOverview", this.id);
+		const sortMenuOpened = ref(false);
+
+		const totalResourcesCount = computed<number>(() => PayerModule.supportedResourcesOverview.find(item => item.resourceType === props.resourceType)?.count || 0);
+
+		const availableSortParams = computed(() => Mappings[props.resourceType]?.sortParams || {});
+		const availableSortKeys = computed<string[]>(() => Object.keys(availableSortParams.value));
+		const sortKey = ref("");
+		const sortParam = computed<string>(() => sortKey.value ? availableSortParams.value[sortKey.value] || "" : "");
+
+		const resourceLoader = ref<ResourceLoader | null>(null);
+		const updateResourceLoader = () => {
+			if (props.resourceType && activePayer.value) {
+				resourceLoader.value = new ResourceLoader({ currentPayer: `/fhir/${props.resourceType}?_source=${activePayer.value.id}&_sort=${sortParam.value}` });
+				resourceLoader.value.load();
+			} else {
+				resourceLoader.value = null;
 			}
-		},
-		getResourceTitle(res) {
-			const { value } = (Object.values(res) as any)[0];
-			return value;
-		},
-		getPatientInfo() {
-			if (this.activePayer.sourcePatientId) {
-				this.$store.dispatch("getPatientInfo", { payerId: this.payer.id, patientId: this.activePayer.sourcePatientId });
+		};
+		watch(() => props.resourceType, updateResourceLoader);
+		watch(activePayer, updateResourceLoader);
+		watch(sortParam, updateResourceLoader);
+		updateResourceLoader();
+
+		const rawResources = computed<object[]>(() => resourceLoader.value?.results?.currentPayer || []);
+		const resources = computed<object[]>(() => rawResources.value.map(Mappings[props.resourceType].convert));
+		const getResourceTitle = (res: object): string => Object.values(res)[0]?.value;
+
+		const mappedPatient = computed<object | null>(() => PatientModule.patient ? Mappings.Patient.convert(PatientModule.patient) : null);
+		const omitPatientName = (patientInfo: object): object => _.omit(patientInfo, "name");
+
+		const isResourceLoading = computed<boolean>(() => resourceLoader.value?.loading || false);
+
+		const more = () => {
+			resourceLoader.value?.load();
+		};
+
+		const refreshInProgress = computed<boolean>(() => PayerModule.importProgress?.type === "REFRESH" || false);
+		const refreshPercentage = computed<number>(() => refreshInProgress.value ? PayerModule.progressPercentage : 0);
+
+		const showingImportOverview = ref(false);
+		watch(refreshInProgress, async inProgress => {
+			if (!inProgress) {
+				await PayersModule.loadPayers();
+				showImportOverview(true);
+				updateResourceLoader();
 			}
-		},
-		//
-		// To avoid patient name duplication
-		//
-		omitPatientName(patientInfo) {
-			const { name, ...patientInfoWithoutName } = patientInfo;
-			return patientInfoWithoutName;
-		},
-		makeResourceLoader(resourceType, payerId, sortParam) {
-			return new ResourceLoader({ currentPayer: `/fhir/${resourceType}?_source=${payerId}&_sort=${sortParam}`});
-		}
+		});
+
+		const showImportOverview = (show: boolean) => {
+			showingImportOverview.value = show;
+			if (show) {
+				PayerModule.getImportOverview(activePayer.value!);
+			}
+		};
+		const importOverview = computed<{ createdCount: number, updatedCount: number }>(() => (PayerModule.importOverview || [])
+			.find(item => item.resourceType === props.resourceType) || { createdCount: 0, updatedCount: 0 });
+
+		const refresh = async () => {
+			if (!activePayer.value) {
+				return;
+			}
+
+			try {
+				await PayerModule.refreshPayerData(activePayer.value, props.resourceType);
+			} catch {
+				showDefaultErrorNotification();
+				PayerModule.setPayerAuthInProgress(false);
+			}
+		};
+
+		return {
+			activePayer,
+			sortMenuOpened,
+			sortKey,
+			totalResourcesCount,
+			availableSortKeys,
+			isResourceLoading,
+			mappedPatient,
+			omitPatientName,
+			resources,
+			getResourceTitle,
+			refreshInProgress,
+			refreshPercentage,
+			showingImportOverview,
+			showImportOverview,
+			importOverview,
+			refresh,
+			more
+		};
 	}
-})
+});
 </script>
 
 <template>
 	<div class="resource">
 		<ResourceHeader
-			@openSortMenu="menuOpened = true"
 			:resource-type="resourceType"
-			:id="activePayerId"
-			:total="total"
-			:sort-enabled="Object.keys(sortParams).length > 0"
+			:payer-id="id"
+			:total="totalResourcesCount"
+			:sort-enabled="availableSortKeys.length > 0"
+			@openSortMenu="sortMenuOpened = true"
 		/>
 		<InfiniteScrollArea
 			class="scroll-area"
-			@more="resourceLoader.load()"
+			:loading="isResourceLoading"
+			@more="more"
 		>
-			<div class="last-imported">
-				{{ payer ? ` Last import: ${ $filters.formatDate(payer.lastImported) } ` : "" }}
-			  <div class="action-wrap">
-				<van-button
-					:icon="require('@/assets/images/time-icon.svg')"
-					size="mini"
-				/>
-				<van-button
-					:icon="require('@/assets/images/refresh.svg')"
-					size="mini"
-				/>
-			  </div>
-			</div>
+			<PayerRefreshToolbar
+				:refresh-in-progress="refreshInProgress"
+				:refresh-percentage="refreshPercentage"
+				:showing-import-overview="showingImportOverview"
+				:import-overview="importOverview"
+				:last-imported="activePayer?.lastImported || ''"
+				class="refresh-toolbar"
+				@refresh="refresh"
+				@update:showing-import-overview="showImportOverview"
+			/>
+
 			<h2 class="section-header">
 				GENERAL INFO
 			</h2>
@@ -163,15 +186,15 @@ export default defineComponent({
 						:key="index"
 						class="field"
 					>
-					<div class="label">
-						{{ field.label }}
-					</div>
-					<div
-						:class="{ 'no-data': !field.value }"
-						class="value"
-					>
-						{{ field.value || "no data" }}
-					</div>
+						<div class="label">
+							{{ field.label }}
+						</div>
+						<div
+							:class="{ 'no-data': !field.value }"
+							class="value"
+						>
+							{{ field.value || "no data" }}
+						</div>
 					</div>
 				</template>
 			</CollapseGroup>
@@ -213,9 +236,9 @@ export default defineComponent({
 			</CollapseGroup>
 		</InfiniteScrollArea>
 		<SortMenu
-			v-model:show="menuOpened"
+			v-model:show="sortMenuOpened"
 			v-model:value="sortKey"
-			:options="Object.keys(sortParams)"
+			:options="availableSortKeys"
 		/>
 	</div>
 </template>
@@ -229,26 +252,6 @@ export default defineComponent({
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-
-	.last-imported {
-		background-color: $mirage;
-		padding: $global-margin $global-margin-large;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: $global-margin-medium;
-		font-size: $global-font-size;
-		font-weight: $global-font-weight-normal;
-		border: 1px solid $platinum;
-
-		.action-wrap {
-			display: flex;
-
-			::v-deep(.van-button:last-child) {
-				margin-left: $global-margin;
-			}
-		}
-	}
 
 	.resource-title {
 		font-size: $global-large-font-size;
@@ -292,7 +295,7 @@ export default defineComponent({
 	.section-header {
 		height: 50px;
 		background-color: $black-russian;
-		font-size: 13px	;
+		font-size: 13px;
 		font-weight: 300;
 		padding: 25px 0 0 30px;
 		text-transform: uppercase;
@@ -302,6 +305,10 @@ export default defineComponent({
 	.section-content {
 		border: 1px solid $platinum;
 		background-color: $mirage;
+	}
+
+	.refresh-toolbar {
+		margin-top: $global-margin-medium;
 	}
 }
 </style>

@@ -1,40 +1,46 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, computed } from "vue";
+import { AuthModule } from "@/store/modules/auth";
+import { goToImportOrHome } from "@/utils/utils";
 
 export default defineComponent({
 	name: "LoginForm",
-	data() {
-		return {
-			username: "",
-			password: "",
-			checked: false,
-			loginError : false
-		};
-	},
-	computed: {
-		loginButtonEnabled(): boolean {
-			return this.checked && this.username !== "" && this.password !== "";
-		}
-	},
-	methods: {
-		//
-		// Form submit handler
-		//
-		handleLogin(): void {
+	setup () {
+		const username = ref<string>("");
+		const password = ref<string>("");
+		const checked = ref<boolean>(false);
+		const loginError = ref<boolean>(false);
+
+		const loginButtonEnabled = computed<boolean>(() => checked.value && username.value !== "" && password.value !== "");
+
+		const handleLogin = async (): Promise<void> => {
 			const payload = {
-				username: this.username,
-				password: this.password
+				username: username.value,
+				password: password.value
 			};
 
-			this.$store.dispatch("authRequest", payload).then(() => this.$router.push("/")).catch((res: any) => {
-				if (res.response.status === 401) {
-					this.loginError = true;
+			try {
+				await AuthModule.login(payload);
+				await goToImportOrHome();
+			} catch (err) {
+				if (err.response.status === 401) {
+					loginError.value = true;
 				}
-			});
-		},
-		hideValidation() {
-			this.loginError = false;
-		}
+			}
+		};
+		const hideValidation = (): void => {
+			loginError.value = false;
+		};
+
+		return {
+			username,
+			password,
+			checked,
+			loginError,
+			loginButtonEnabled,
+			handleLogin,
+			hideValidation
+		};
 	}
 });
 

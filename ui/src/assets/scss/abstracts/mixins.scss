@@ -1,4 +1,4 @@
-@mixin icon($src, $w, $h: $w) {
+@mixin mask-icon($src, $w, $h: $w) {
 	display: inline-block;
 	width: $w;
 	height: $h;
@@ -9,6 +9,15 @@
 	-webkit-mask-size: 100%;
 	mask-repeat: no-repeat;
 	-webkit-mask-repeat: no-repeat;
+}
+
+@mixin icon($src, $w, $h: $w) {
+	display: inline-block;
+	width: $w;
+	height: $h;
+	background-image: url($src);
+	background-repeat: no-repeat;
+	background-size: 100%;
 }
 
 @mixin dont-break-out() {
@@ -22,4 +31,11 @@
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+@mixin slide {
+	transform: translate3d(0, 0, 0);
+	position: absolute;
+	transition: .4s;
+	width: 100%;
 }

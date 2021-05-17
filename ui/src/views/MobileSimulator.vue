@@ -12,7 +12,9 @@ export default defineComponent({
 
 <template>
 	<div class="mobile-simulator">
-		<Phone />
+		<div class="phone-wrapper">
+			<Phone />
+		</div>
 		<div class="footer">
 			<div class="item">
 				<img
@@ -52,20 +54,18 @@ export default defineComponent({
 @import "~@/assets/scss/abstracts/variables";
 
 .mobile-simulator {
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-between;
-	overflow-y: overlay;
+	height: 100%;
 }
 
 .footer {
 	display: flex;
 	justify-content: center;
-	background-color: rgba($pinkish-grey, 0.15);
+	background-color: $white-smoke-3;
 	width: 100%;
-	padding: 15px;
+	padding: $global-margin;
+	position: sticky;
+	bottom: 0;
+	z-index: 1; // the footer should be on top of the scroll bar
 
 	.item {
 		font-size: $global-font-size;
@@ -87,5 +87,14 @@ export default defineComponent({
 			color: $picton-blue;
 		}
 	}
+}
+
+.phone-wrapper {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	overflow-y: overlay;
+	padding-bottom: 63px; // footer height
 }
 </style>

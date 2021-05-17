@@ -1,14 +1,20 @@
 package org.hl7.davinci.refimpl.patientui.services;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.davinci.refimpl.patientui.dto.PayerDto;
+import org.hl7.davinci.refimpl.patientui.dto.ResourceInfoDto;
 import org.hl7.davinci.refimpl.patientui.fhir.FhirCapabilitiesLookup;
 import org.hl7.davinci.refimpl.patientui.fhir.model.OAuthUris;
 import org.hl7.davinci.refimpl.patientui.model.Payer;
+import org.hl7.davinci.refimpl.patientui.repository.ImportInfoRepository;
 import org.hl7.davinci.refimpl.patientui.repository.PayerRepository;
+import org.hl7.davinci.refimpl.patientui.services.cleanup.ImportDataCleaner;
+import org.hl7.davinci.refimpl.patientui.services.progress.ProgressManager;
+import org.hl7.davinci.refimpl.patientui.services.progress.ProgressType;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +28,15 @@ import java.util.stream.Collectors;
  * @author Kseniia Lutsko
  */
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PayerService {
 
-  private final PatientDataService patientDataService;
   private final PayerRepository payerRepository;
+  private final ImportInfoRepository importInfoRepository;
   private final FhirCapabilitiesLookup fhirCapabilitiesLookup;
+  private final ProgressManager progressManager;
+  private final ImportDataCleaner importDataCleaner;
   private final ModelMapper modelMapper;
 
   /**
@@ -60,14 +68,9 @@ public class PayerService {
    */
   @Transactional
   public PayerDto createPayer(PayerDto newPayerDto) {
+    updateOAuthUris(newPayerDto);
     Payer payer = modelMapper.map(newPayerDto, Payer.class);
-    OAuthUris oAuthUris = fhirCapabilitiesLookup.getOAuthUris(newPayerDto.getFhirServerUri());
-    if (oAuthUris.getAuthorize() == null || oAuthUris.getToken() == null) {
-      throw new IllegalStateException("The FHIR server does not support OAuth.");
-    }
-    payer.setAuthorizeUri(oAuthUris.getAuthorize());
-    payer.setTokenUri(oAuthUris.getToken());
-    return modelMapper.map(payerRepository.save(payer), PayerDto.class);
+    return modelMapper.map(savePayer(payer), PayerDto.class);
   }
 
   /**
@@ -84,12 +87,7 @@ public class PayerService {
       if (payer.getLastImported() != null) {
         throw new IllegalStateException("The Payer's server URI cannot be updated when data were already imported.");
       }
-      OAuthUris oAuthUris = fhirCapabilitiesLookup.getOAuthUris(payerDto.getFhirServerUri());
-      if (oAuthUris.getAuthorize() == null || oAuthUris.getToken() == null) {
-        throw new IllegalStateException("The FHIR server does not support OAuth.");
-      }
-      payer.setAuthorizeUri(oAuthUris.getAuthorize());
-      payer.setTokenUri(oAuthUris.getToken());
+      updateOAuthUris(payerDto);
     }
     modelMapper.map(payerDto, payer);
     return modelMapper.map(payer, PayerDto.class);
@@ -100,11 +98,25 @@ public class PayerService {
    *
    * @param id identification of payer that should be deleted
    */
+  @Async
   @Transactional
   public void deletePayer(Long id) {
-    Payer payer = retrievePayer(id);
-    patientDataService.clearData(id);
-    payerRepository.delete(payer);
+    progressManager.init(id, ProgressType.DELETE);
+    try {
+      Payer payer = retrievePayer(id);
+      List<ResourceInfoDto> resources = importInfoRepository.findAllByPayerGroupByResourceType(payer);
+      progressManager.start(id, (int) resources.stream()
+          .mapToLong(ResourceInfoDto::getCount)
+          .sum() + 2);
+      importDataCleaner.cleanFhirData(id, resources);
+      payerRepository.delete(payer);
+      progressManager.update(id);
+      progressManager.complete(id);
+      progressManager.delete(id);
+    } catch (Exception e) {
+      progressManager.fail(id, e.getMessage());
+      throw e;
+    }
   }
 
   /**
@@ -117,6 +129,27 @@ public class PayerService {
   Payer retrievePayer(Long id) {
     return payerRepository.findById(id)
         .orElseThrow(() -> new EmptyResultDataAccessException(
-            String.format("No %s entity with id %s exists!", Payer.class.getSimpleName(), id), 1));
+            String.format("No %s entity with id '%s' exists!", Payer.class.getSimpleName(), id), 1));
+  }
+
+  /**
+   * Persists the given payer in the database.
+   *
+   * @param payer the {@link Payer} to persist
+   * @return persisted {@link Payer}
+   */
+  Payer savePayer(Payer payer) {
+    return payerRepository.save(payer);
+  }
+
+  private void updateOAuthUris(PayerDto payer) {
+    if (StringUtils.isAnyBlank(payer.getTokenUri(), payer.getAuthorizeUri())) {
+      OAuthUris oAuthUris = fhirCapabilitiesLookup.getOAuthUris(payer.getFhirServerUri());
+      if (StringUtils.isAnyBlank(oAuthUris.getToken(), oAuthUris.getAuthorize())) {
+        throw new IllegalStateException("The FHIR server does not support OAuth.");
+      }
+      payer.setAuthorizeUri(oAuthUris.getAuthorize());
+      payer.setTokenUri(oAuthUris.getToken());
+    }
   }
 }

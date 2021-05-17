@@ -5,6 +5,8 @@ import CollapseGroup from "@/components/Phone/CollapseGroup.vue";
 import ResourceLoader from "../../utils/ResourceLoader";
 import Mappings from "../../utils/resourceMappings.js";
 import InfiniteScrollArea from "./InfiniteScrollArea.vue";
+import { PayerModule } from "@/store/modules/payer";
+import { PayersModule } from "@/store/modules/payers";
 
 export default defineComponent({
 	components: { Header, CollapseGroup, InfiniteScrollArea },
@@ -16,16 +18,17 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			resourceLoader: new ResourceLoader([])
+			resourceLoader: new ResourceLoader([]),
+			openedPayers: []
 		};
 	},
 	computed: {
 		resourceCount() {
-			const item = this.$store.getters.totalResourcesOverview.find(x => x.resourceType === this.resourceType);
+			const item = PayerModule.totalSupportedResourcesOverview.find(x => x.resourceType === this.resourceType);
 			return item ? item.count : "";
 		},
 		payers() {
-			return this.$store.getters.importedPayers;
+			return PayersModule.importedPayers;
 		},
 		searchByPayer() {
 			return Object.fromEntries(
@@ -36,29 +39,32 @@ export default defineComponent({
 			return this.resourceLoader.results;
 		},
 		payersWithResources() {
-			return this.payers.filter(payer => this.resourcesByPayer[payer.id].length > 0);
+			return this.payers.filter(payer => this.resourcesByPayer[payer.id] && this.resourcesByPayer[payer.id].length > 0);
+		},
+		isResourceLoading() {
+			return this.resourceLoader.loading;
 		}
 	},
 	watch: {
 		searchByPayer(searches) {
 			this.resourceLoader = new ResourceLoader(searches, 20);
 			this.resourceLoader.load();
+		},
+		payersWithResources(val) {
+			this.openedPayers = [...val.map(p => p.id)];
 		}
 	},
 	created() {
 		this.resourceLoader = new ResourceLoader(this.searchByPayer, 20);
 		this.resourceLoader.load();
-		this.$store.dispatch("getTotalResourcesOverview");
+		PayerModule.getTotalResourcesOverview();
 	},
 	methods: {
 		loadMore() {
 			this.resourceLoader.load();
 		},
-		goToPayer(payerId: string) {
-			this.$router.push(`/payer/${payerId}`);
-		},
 		goBack() {
-			this.$router.push(`/all-data`);
+			this.$router.push("/all-data");
 		},
 		getResourceFields(res) {
 			return Object.values(Mappings[this.resourceType].convert(res));
@@ -79,57 +85,53 @@ export default defineComponent({
 
 		<InfiniteScrollArea
 			class="scroll-area"
+			:loading="isResourceLoading"
 			@more="loadMore"
 		>
 			<div class="sub-header">
 				Combined imported data from all payers.
 			</div>
 
-			<div
-				v-for="payer in payersWithResources"
-				:key="payer.id"
-			>
-				<h2 class="section-header">
-					<span class="payer-name">{{ payer.name }}</span>
-					<van-button
-						:icon="require('@/assets/images/arrow-right.svg')"
-						class="icon btn-arrow-right"
-						size="mini"
-						@click="goToPayer(payer.id)"
-					/>
-				</h2>
-
-				<CollapseGroup
-					:items="resourcesByPayer[payer.id]"
+			<van-collapse v-model="openedPayers">
+				<van-collapse-item
+					v-for="payer in payersWithResources"
+					:key="payer.id"
+					:title="payer.name"
+					:name="payer.id"
+					class="section-header"
 				>
-					<template #title="{ item }">
-						<div
-							:class="{ 'no-data': !getResourceTitle(item) }"
-							class="resource-title"
-						>
-							{{ getResourceTitle(item) || "no data" }}
-						</div>
-					</template>
-
-					<template #default="{ item }">
-						<div
-							v-for="(field, index) in getResourceFields(item)"
-							:key="index"
-							class="field"
-						>
-							<div class="label">
-								{{ field.label }}
-							</div>
+					<CollapseGroup
+						:items="resourcesByPayer[payer.id]"
+					>
+						<template #title="{ item }">
 							<div
-								:class="{ 'no-data': !field.value }"
-								class="value"
+								:class="{ 'no-data': !getResourceTitle(item) }"
+								class="resource-title"
 							>
-								{{ field.value || "no data" }}
+								{{ getResourceTitle(item) || "no data" }}
 							</div>
-						</div>
-					</template>
-				</CollapseGroup>
-			</div>
+						</template>
+
+						<template #default="{ item }">
+							<div
+								v-for="(field, index) in getResourceFields(item)"
+								:key="index"
+								class="field"
+							>
+								<div class="label">
+									{{ field.label }}
+								</div>
+								<div
+									:class="{ 'no-data': !field.value }"
+									class="value"
+								>
+									{{ field.value || "no data" }}
+								</div>
+							</div>
+						</template>
+					</CollapseGroup>
+				</van-collapse-item>
+			</van-collapse>
 		</InfiniteScrollArea>
 	</div>
 </template>
@@ -155,33 +157,6 @@ export default defineComponent({
 
 	.scroll-area {
 		flex: 1;
-	}
-
-	.section-header {
-		height: 50px;
-		background-color: $black-russian;
-		border: 1px solid $platinum;
-		font-size: 13px;
-		font-weight: $global-font-weight-light;
-		margin: 0;
-		padding: 25px $global-margin-large 0;
-		text-transform: uppercase;
-		position: sticky;
-		z-index: 1;
-		top: -1px;
-
-		.btn-arrow-right {
-			position: absolute;
-			right: 30px;
-			bottom: 8px;
-		}
-
-		.payer-name {
-			display: block;
-			padding-right: 25px;
-
-			@include text-ellipsis();
-		}
 	}
 
 	.resource-title {
@@ -213,6 +188,32 @@ export default defineComponent({
 
 	.no-data {
 		color: $pinkish-grey;
+	}
+
+	.section-header {
+		> ::v-deep(.van-cell) {
+			height: 50px;
+			background-color: $black-russian;
+			padding: 25px $global-margin-large $global-margin-small;
+			border: 1px solid $platinum;
+			position: sticky;
+			z-index: 1;
+			top: -1px;
+
+			.van-cell__title {
+				font-size: $global-intermediate-font-size;
+				font-weight: $global-font-weight-light;
+				text-transform: uppercase;
+
+				@include text-ellipsis();
+			}
+		}
+
+		> ::v-deep(.van-collapse-item__wrapper) {
+			.van-collapse-item__content {
+				padding: 0;
+			}
+		}
 	}
 }
 </style>

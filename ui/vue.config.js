@@ -1,17 +1,21 @@
 const path = require("path");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+const CompressionPlugin = require("compression-webpack-plugin");
+const StylelintPlugin = require("stylelint-webpack-plugin");
 
 module.exports = {
 	devServer: {
-		proxy: {
-			"/api": {
-				target: "https://localhost:8443"
-			},
-			"/fhir": {
-				target: "https://localhost:8443"
-			}
+		port: 8081,
+		after(app) {
+			const proxy = createProxyMiddleware({
+				target: "https://localhost:8443",
+				secure: false
+			});
+			app.use("/api", proxy);
+			app.use("/fhir", proxy);
 		}
 	},
-	lintOnSave: process.env.NODE_ENV !== "production",
+	lintOnSave: process.env.NODE_ENV === "development" ? "warning" : "default",
 	css: {
 		loaderOptions: {
 			less: {
@@ -22,5 +26,13 @@ module.exports = {
 				}
 			}
 		}
+	},
+	configureWebpack: {
+		plugins: [
+			new CompressionPlugin(),
+			new StylelintPlugin({
+				files: ["./src/**/*.{vue,scss,less}"]
+			})
+		]
 	}
 };

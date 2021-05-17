@@ -1,0 +1,27 @@
+@import "~@/assets/scss/abstracts/variables";
+
+.el-tabs__item {
+	font-weight: $global-font-weight-normal;
+
+	&:last-child {
+		padding: 0 0 0 10px;
+	}
+
+	&:first-child {
+		margin-right: 20px;
+	}
+
+	&.is-active {
+		color: $global-text-color;
+		font-size: $global-font-size;
+		font-weight: $global-font-weight-medium;
+	}
+
+	&:hover {
+		color: $global-text-color;
+	}
+}
+
+.el-tabs__nav-wrap::after {
+	height: 1px;
+}

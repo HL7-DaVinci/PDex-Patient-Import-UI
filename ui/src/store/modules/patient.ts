@@ -1,46 +1,40 @@
-import { getPatientInfo, getAllPatients } from "../../api/api";
+import { getPatient, getAllPatients } from "@/api/api";
+import { IPatient as IFhirPatient } from "@ahryman40k/ts-fhir-types/lib/R4";
+import { VuexModule, Module, Action, Mutation, getModule } from "vuex-module-decorators";
+import store from "@/store";
 
-const state = {
-	patient: null,
-	allPatients: []
-};
+export interface IPatient {
+	patient: IFhirPatient | null,
+	allPatients: IFhirPatient[]
+}
 
+@Module({ dynamic: true, store, name: "patient" })
+class Patient extends VuexModule implements IPatient {
+	patient: IFhirPatient | null = null;
+	allPatients: IFhirPatient[] = [];
 
-const getters = {
-	patient(state: any) {
-		return state.patient;
-	},
-	allPatients(state: any) {
-		return state.allPatients;
+	@Mutation
+	setPatientInfo(patient: IFhirPatient): void {
+		this.patient = patient;
 	}
-};
 
-const mutations = {
-	setPatientInfo(state: any, data: any) {
-		state.patient = data;
-	},
-	setAllPatients(state: any, data: any) {
-		state.allPatients = data;
+	@Mutation
+	setAllPatients(patients: IFhirPatient[]): void {
+		this.allPatients = patients;
 	}
-};
 
-const actions = {
-	getPatientInfo({ commit }: any, payload: any) {
-		return getPatientInfo(payload).then(({ data }) => {
-			commit("setPatientInfo", data);
-		});
-	},
-	getAllPatients({ commit }: any) {
-		return getAllPatients().then(({ data }) => {
-			const patients = data.entry ? data.entry.map(entry => entry.resource) : [];
-			commit("setAllPatients", patients);
-		});
+	@Action
+	async getPatient(payload: { payerId: number, patientId: string }): Promise<void> {
+		const { data } = await getPatient(payload);
+		this.setPatientInfo(data);
 	}
-};
 
-export default {
-	state,
-	getters,
-	mutations,
-	actions
-};
+	@Action
+	async getAllPatients(): Promise<void> {
+		const { data } = await getAllPatients();
+		const patients = data.entry ? data.entry.map(entry => entry.resource) : [];
+		this.setAllPatients(patients);
+	}
+}
+
+export const PatientModule = getModule(Patient);

@@ -4,18 +4,21 @@ import Header from "@/components/Phone/Header.vue";
 import ResourceList from "@/components/Phone/ResourceList.vue";
 import CollapseGroup from "@/components/Phone/CollapseGroup.vue";
 import Mappings from "../../utils/resourceMappings.js";
+import { PatientModule } from "@/store/modules/patient";
+import { PayerModule } from "@/store/modules/payer";
+import { PayersModule } from "@/store/modules/payers";
 
 export default defineComponent({
 	components: { Header, ResourceList, CollapseGroup },
 	computed: {
 		resources() {
-			return this.$store.getters.totalResourcesOverview;
+			return PayerModule.totalSupportedResourcesOverview;
 		},
 		payers() {
-			return this.$store.getters.importedPayers;
+			return PayersModule.importedPayers;
 		},
 		patients() {
-			return this.$store.getters.allPatients;
+			return PatientModule.allPatients;
 		},
 		payerPatient() {
 			return this.payers.map(payer => ({
@@ -28,8 +31,8 @@ export default defineComponent({
 		}
 	},
 	created() {
-		this.$store.dispatch("getTotalResourcesOverview");
-		this.$store.dispatch("getAllPatients");
+		PayerModule.getTotalResourcesOverview();
+		PatientModule.getAllPatients();
 	},
 	methods: {
 		goToResource(resourceType: string) {
@@ -72,10 +75,13 @@ export default defineComponent({
 
 				<template #default="{ item }">
 					<div
-						v-for="field in Object.values(item.patient)"
+						v-for="(field, index) in Object.values(item.patient)"
+						:key="index"
 						class="field"
 					>
-						<div class="label">{{ field.label }}</div>
+						<div class="label">
+							{{ field.label }}
+						</div>
 						<div
 							:class="{ 'no-data': !field.value }"
 							class="value"
@@ -99,8 +105,12 @@ export default defineComponent({
 				class="no-resources"
 			>
 				<div class="icon"></div>
-				<div class="primary">No data to display</div>
-				<div class="secondary">There are no resources from this payers.</div>
+				<div class="primary">
+					No data to display
+				</div>
+				<div class="secondary">
+					There are no resources from this payers.
+				</div>
 			</div>
 		</div>
 	</div>
@@ -130,7 +140,8 @@ export default defineComponent({
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		& > * {
+
+		> * {
 			flex-shrink: 0;
 		}
 	}
@@ -187,7 +198,7 @@ export default defineComponent({
 		.icon {
 			color: $pinkish-grey;
 
-			@include icon("~@/assets/images/no-data.svg", 100px);
+			@include mask-icon("~@/assets/images/no-data.svg", 100px);
 		}
 
 		.primary {

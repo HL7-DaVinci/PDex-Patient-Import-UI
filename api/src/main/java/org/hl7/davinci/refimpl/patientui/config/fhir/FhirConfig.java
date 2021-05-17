@@ -1,9 +1,11 @@
 package org.hl7.davinci.refimpl.patientui.config.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IRestfulClientFactory;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import lombok.RequiredArgsConstructor;
 import org.hl7.davinci.refimpl.patientui.config.fhir.dao.ExtendedDaoConfig;
-import org.hl7.davinci.refimpl.patientui.fhir.CustomRestfulClientFactory;
+import org.hl7.davinci.refimpl.patientui.fhir.client.PayerAwareClientFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +20,8 @@ public class FhirConfig {
 
   @PostConstruct
   public void configureFhirContext() {
-    CustomRestfulClientFactory clientFactory = new CustomRestfulClientFactory(fhirContext);
-    clientFactory.setSocketTimeout(60000);
+    IRestfulClientFactory clientFactory = new PayerAwareClientFactory(fhirContext);
+    clientFactory.setServerValidationMode(ServerValidationModeEnum.NEVER);
     fhirContext.setRestfulClientFactory(clientFactory);
   }
 

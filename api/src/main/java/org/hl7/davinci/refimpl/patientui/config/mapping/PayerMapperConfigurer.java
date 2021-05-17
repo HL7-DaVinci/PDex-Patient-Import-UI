@@ -32,7 +32,7 @@ public class PayerMapperConfigurer implements ModelMapperConfigurer {
             .map(Payer::getLastImported, PayerDto::setLastImported));
 
     modelMapper.typeMap(PayerDto.class, Payer.class)
-        .addMappings(mapper -> mapper.skip(Payer::setAuthorizeUri))
-        .addMappings(mapper -> mapper.skip(Payer::setTokenUri));
+        .addMappings(mapping -> mapping.skip(Payer::setLastImported))
+        .addMappings(mapping -> mapping.skip(Payer::setSourcePatientId));
   }
 }

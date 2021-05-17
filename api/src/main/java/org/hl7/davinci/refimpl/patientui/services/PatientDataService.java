@@ -1,25 +1,20 @@
 package org.hl7.davinci.refimpl.patientui.services;
 
-import ca.uhn.fhir.rest.api.Constants;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.gclient.ICriterion;
-import ca.uhn.fhir.rest.gclient.ReferenceClientParam;
 import lombok.RequiredArgsConstructor;
 import org.hl7.davinci.refimpl.patientui.dto.ImportInfoDto;
 import org.hl7.davinci.refimpl.patientui.dto.ResourceInfoDto;
-import org.hl7.davinci.refimpl.patientui.fhir.FhirClientProvider;
 import org.hl7.davinci.refimpl.patientui.model.Payer;
 import org.hl7.davinci.refimpl.patientui.repository.ImportInfoRepository;
-import org.hl7.davinci.refimpl.patientui.repository.PayerRepository;
-import org.hl7.fhir.r4.model.Patient;
+import org.hl7.davinci.refimpl.patientui.services.cleanup.ImportDataCleaner;
+import org.hl7.davinci.refimpl.patientui.services.progress.ProgressManager;
+import org.hl7.davinci.refimpl.patientui.services.progress.ProgressType;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -29,12 +24,13 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class PatientDataService {
 
-  private final PayerRepository payerRepository;
+  private final ImportDataCleaner importDataCleaner;
+  private final PayerService payerService;
   private final ImportInfoRepository importInfoRepository;
-  private final FhirClientProvider fhirClientProvider;
+  private final ProgressManager progressManager;
   private final ModelMapper modelMapper;
 
   /**
@@ -51,7 +47,7 @@ public class PatientDataService {
    * @return the {@link ResourceInfoDto} list
    */
   public List<ResourceInfoDto> getImportedResources(Long payerId) {
-    Payer payer = payerRepository.getOne(payerId);
+    Payer payer = payerService.retrievePayer(payerId);
     return importInfoRepository.findAllByPayerGroupByResourceType(payer);
   }
 
@@ -63,7 +59,7 @@ public class PatientDataService {
    * @return the {@link ImportInfoDto} list
    */
   public List<ImportInfoDto> getImportInfo(Long payerId, OffsetDateTime importedDate) {
-    Payer payer = payerRepository.getOne(payerId);
+    Payer payer = payerService.retrievePayer(payerId);
     return importInfoRepository.findAllByPayerAndImportDate(payer, importedDate)
         .parallelStream()
         .map(i -> modelMapper.map(i, ImportInfoDto.class))
@@ -73,22 +69,28 @@ public class PatientDataService {
   /**
    * Removes all the imported data for the given payer.
    *
-   * @param payerId the ID of the payer
+   * @param payerId the ID of the payer, if null - the data for all payers will be removed
    */
+  @Async
   @Transactional
   public void clearData(Long payerId) {
-    Payer payer = payerRepository.getOne(payerId);
-    Set<String> payerResources = importInfoRepository.findDistinctResourcesByPayer(payer);
-    payerResources.add(Patient.class.getSimpleName());
-    ICriterion<ReferenceClientParam> deleteCriteria = new ReferenceClientParam(Constants.PARAM_SOURCE).hasId(
-        payerId.toString());
-    IGenericClient localClient = fhirClientProvider.newLocalClient();
-    payerResources.forEach(resource -> localClient.delete()
-        .resourceConditionalByType(resource)
-        .where(deleteCriteria)
-        .execute());
-    importInfoRepository.deleteAllByPayer(payer);
-    payer.setLastImported(null);
-    payer.setSourcePatientId(null);
+    Long progressId = payerId == null ? ProgressManager.ALL_PAYERS_PROGRESS_ID : payerId;
+    progressManager.init(progressId, ProgressType.CLEAR);
+    try {
+      List<ResourceInfoDto> resources = payerId == null
+          ? importInfoRepository.findAllGroupByResourceType()
+          : importInfoRepository.findAllByPayerGroupByResourceType(payerService.retrievePayer(payerId));
+      // Adding two more steps for clearing the patient and the local data
+      progressManager.start(progressId, (int) resources.stream()
+          .mapToLong(ResourceInfoDto::getCount)
+          .sum() + 2);
+      importDataCleaner.cleanFhirData(payerId, resources);
+      importDataCleaner.cleanLocalData(payerId);
+      progressManager.update(progressId);
+      progressManager.complete(progressId);
+    } catch (Exception e) {
+      progressManager.fail(progressId, e.getMessage());
+      throw e;
+    }
   }
 }

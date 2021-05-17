@@ -535,7 +535,7 @@ export default {
 			"Status": "status",
 			"Security label": "security-label"
 		}
-	}),
+	})
 };
 
 
@@ -571,7 +571,7 @@ const showPeriod = fhir =>
 
 const showRatio = fhir =>
 	Maybe(
-		Maybe(fhir.nominator).then(showQuantity),
+		Maybe(fhir.numerator).then(showQuantity),
 		Maybe(fhir.denominator).then(showQuantity)
 	).then(
 		(n, d) => `${n}/${d}`

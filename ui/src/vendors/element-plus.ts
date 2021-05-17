@@ -9,7 +9,17 @@ import {
 	ElCollapseItem,
 	ElLoading,
 	ElNotification,
-	ElDialog
+	ElDialog,
+	ElIcon,
+	ElTabs,
+	ElTabPane,
+	ElTooltip,
+	ElRadioGroup,
+	ElRadioButton,
+	ElSwitch,
+	ElAutocomplete,
+	ElPopper,
+	ElPopover
 } from "element-plus";
 
 export default (app: any) => {
@@ -22,6 +32,16 @@ export default (app: any) => {
 	app.use(ElLoading);
 	app.use(ElNotification);
 	app.use(ElDialog);
+	app.use(ElIcon);
+	app.use(ElTabs);
+	app.use(ElTabPane);
+	app.use(ElTooltip);
+	app.use(ElRadioGroup);
+	app.use(ElRadioButton);
+	app.use(ElSwitch);
+	app.use(ElAutocomplete);
+	app.use(ElPopper);
+	app.use(ElPopover);
 
 	app.config.globalProperties.$notify = ElNotification;
 };

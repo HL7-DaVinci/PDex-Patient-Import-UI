@@ -2,13 +2,17 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-	name: "PayerHeader",
 	props: {
 		title: {
 			type: String,
 			required: true
+		},
+		actionsDisabled: {
+			type: Boolean,
+			default: false
 		}
-	}
+	},
+	emits: ["show-remove-payer-dialog"]
 });
 </script>
 
@@ -20,6 +24,7 @@ export default defineComponent({
 			<template #left>
 				<van-button
 					:icon="require('@/assets/images/arrow-left.svg')"
+					:disabled="actionsDisabled"
 					size="mini"
 					@click="$router.push('/')"
 				/>
@@ -27,8 +32,9 @@ export default defineComponent({
 			<template #right>
 				<van-button
 					:icon="require('@/assets/images/icon-trash.svg')"
+					:disabled="actionsDisabled"
 					size="mini"
-					@click="$emit('showRemovePayerDialog')"
+					@click="$emit('show-remove-payer-dialog')"
 				/>
 			</template>
 		</van-nav-bar>

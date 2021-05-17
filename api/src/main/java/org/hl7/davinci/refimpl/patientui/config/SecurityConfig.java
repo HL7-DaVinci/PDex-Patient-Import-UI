@@ -1,11 +1,11 @@
 package org.hl7.davinci.refimpl.patientui.config;
 
 import lombok.RequiredArgsConstructor;
-import org.hl7.davinci.refimpl.patientui.security.jwt.AuthenticationJwtTokenFilter;
+import org.hl7.davinci.refimpl.patientui.security.jwt.JwtAuthenticationProvider;
+import org.hl7.davinci.refimpl.patientui.security.jwt.JwtAuthenticationTokenFilter;
 import org.hl7.davinci.refimpl.patientui.security.jwt.JwtUtils;
 import org.hl7.davinci.refimpl.patientui.security.jwt.UnauthorizedEntryPoint;
 import org.hl7.davinci.refimpl.patientui.security.services.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,16 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final JwtUtils jwtUtils;
   private final UnauthorizedEntryPoint unauthorizedHandler;
-
-  @Bean
-  public AuthenticationJwtTokenFilter authenticationJwtTokenFilter() {
-    return new AuthenticationJwtTokenFilter(jwtUtils, userDetailsService());
-  }
 
   @Override
   public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -55,6 +50,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new UserDetailsServiceImpl(passwordEncoder());
   }
 
+  @Bean
+  public JwtAuthenticationProvider jwtAuthenticationProvider() {
+    return new JwtAuthenticationProvider(userDetailsService(), jwtUtils);
+  }
+
+  @Bean
+  public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
+    return new JwtAuthenticationTokenFilter(jwtAuthenticationProvider());
+  }
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.cors()
@@ -69,13 +74,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .authorizeRequests()
         //allows API paths for authorization and right debug panel
-        .antMatchers("/api/payers/resources")
+        .antMatchers("/api/payers/resources", "/api/payers/clear")
         .authenticated()
-        .antMatchers("/api/auth/*", "/api/payers", "/api/payers/*")
+        .antMatchers("/api/ws/**", "/api/auth/*", "/api/payers", "/api/payers/*", "/api/fhir/oauth-uris",
+            "/api/payers/*/authorize")
         .permitAll()
         .antMatchers("/api/**", "/fhir/**")
         .authenticated();
 
-    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
   }
 }

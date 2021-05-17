@@ -25,9 +25,7 @@ public class PayerDto {
   private String clientId;
   @NotEmpty
   private String scope;
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private String authorizeUri;
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private String tokenUri;
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private String sourcePatientId;

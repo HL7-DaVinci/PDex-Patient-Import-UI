@@ -8,8 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,10 +40,11 @@ public class Payer extends BaseEntity {
   private OffsetDateTime lastImported;
   @OneToMany(mappedBy = "payer", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ImportInfo> importInfo = new HashSet<>();
+  @OneToMany(mappedBy = "payer", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<ImportRequest> importRequests = new HashSet<>();
 
-  public void addImportInfo(List<ImportInfo> importInfo) {
+  public void addImportInfo(Collection<ImportInfo> importInfo) {
     this.importInfo.addAll(importInfo);
-    importInfo.parallelStream()
-        .forEach(i -> i.setPayer(this));
+    importInfo.forEach(i -> i.setPayer(this));
   }
 }

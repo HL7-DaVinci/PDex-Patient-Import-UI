@@ -1,5 +1,3 @@
-const CompressionPlugin = require("compression-webpack-plugin");
-
 module.exports = {
 	module: {
 		rules: [
@@ -8,12 +6,6 @@ module.exports = {
 				loader: "less-loader"
 			}
 		],
-		lintOnSave: "default",
-		configureWebpack: {
-			plugins: [
-				new CompressionPlugin()
-			]
-		},
 		css: {
 			extract: false
 		}

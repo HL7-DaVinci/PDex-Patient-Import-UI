@@ -1,0 +1,29 @@
+@import "~@/assets/scss/abstracts/variables";
+
+.el-switch {
+	.el-switch__core {
+		border-color: $whisper;
+		background: $global-background;
+		border-radius: 14px;
+
+		.el-switch__action {
+			top: 2px;
+			left: 2px;
+			background: $whisper;
+		}
+	}
+
+	&.is-checked {
+		.el-switch__core {
+			border-color: $whisper;
+		}
+
+		.el-switch__action {
+			background: $global-primary-color;
+		}
+	}
+
+	&.is-disabled .el-switch__action {
+		background: $whisper;
+	}
+}

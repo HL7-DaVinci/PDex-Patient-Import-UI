@@ -1,8 +1,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import AppConfirmDialog from "@/components/AppConfirmDialog.vue";
+import { handleMobileLogout } from "@/utils/handleMobileLogout";
 
 export default defineComponent({
 	name: "ActionMenu",
+	components: { AppConfirmDialog },
 	props: {
 		show: {
 			type: Boolean,
@@ -10,14 +13,21 @@ export default defineComponent({
 		}
 	},
 	emits: ["clear-all", "update:show"],
-	methods: {
-		logout() {
-			this.$store.dispatch("authLogout").then(() => this.$router.push("/login"));
-		},
-		handleClearAll() {
-			this.$emit("update:show", false);
-			this.$emit("clear-all", false);
-		}
+	setup(props, { emit }) {
+		const { confirmOptions, showDialog, handleLogout, clearAllRequests } = handleMobileLogout();
+
+		const handleClearAll = (): void => {
+			emit("update:show", false);
+			emit("clear-all", false);
+		};
+
+		return {
+			confirmOptions,
+			showDialog,
+			handleLogout,
+			handleClearAll,
+			clearAllRequests
+		};
 	}
 });
 </script>
@@ -41,7 +51,7 @@ export default defineComponent({
 
 			<van-cell
 				clickable
-				@click="logout"
+				@click="handleLogout"
 			>
 				<div class="cell-content logout">
 					<span class="icon"></span>
@@ -60,6 +70,12 @@ export default defineComponent({
 			</van-cell>
 		</van-popup>
 	</div>
+	<AppConfirmDialog
+		:show-dialog="showDialog"
+		:options="confirmOptions"
+		@hide-dialog="showDialog = false"
+		@confirm="clearAllRequests"
+	/>
 </template>
 
 <style lang="scss" scoped>
@@ -94,20 +110,20 @@ export default defineComponent({
 		color: $torch-red;
 
 		.icon {
-			@include icon("~@/assets/images/icon-trash.svg", 14px, 15px);
+			@include mask-icon("~@/assets/images/icon-trash.svg", 14px, 15px);
 		}
 	}
 
 	.logout .icon {
 		color: $active-color;
 
-		@include icon("~@/assets/images/icon-logout.svg", 15px);
+		@include mask-icon("~@/assets/images/icon-logout.svg", 15px);
 	}
 
 	.close .icon {
 		color: $active-color;
 
-		@include icon("~@/assets/images/close-icon.svg", 15px);
+		@include mask-icon("~@/assets/images/close-icon.svg", 15px);
 	}
 }
 </style>

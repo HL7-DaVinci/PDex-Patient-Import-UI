@@ -5,7 +5,7 @@ import org.hl7.davinci.refimpl.patientui.dto.TokenRequestDto;
 import org.hl7.davinci.refimpl.patientui.dto.VerifyTokenResponseDto;
 import org.hl7.davinci.refimpl.patientui.security.payload.JwtResponse;
 import org.hl7.davinci.refimpl.patientui.security.payload.LoginRequest;
-import org.hl7.davinci.refimpl.patientui.services.AuthenticationService;
+import org.hl7.davinci.refimpl.patientui.services.LocalAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +19,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthenticationController {
 
-  private final AuthenticationService authenticationService;
+  private final LocalAuthService authenticationService;
 
   @PostMapping("/login")
   public JwtResponse authenticate(@Valid @RequestBody LoginRequest loginRequest) {

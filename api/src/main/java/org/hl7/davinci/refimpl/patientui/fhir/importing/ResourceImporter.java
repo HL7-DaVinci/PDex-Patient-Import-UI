@@ -51,6 +51,10 @@ public class ResourceImporter {
         .resource(resourceType)
         .withId(resourceId)
         .execute();
+    if (resource == null) {
+      throw new IllegalStateException(
+          String.format("Failed to retrieve the '%s' resource. It cannot be imported.", resourceType.getSimpleName()));
+    }
     return importResource(endpoints.getTargetClient(), resource, payerId);
   }
 
@@ -65,7 +69,7 @@ public class ResourceImporter {
    */
   public List<MethodOutcome> importBundle(ImportEndpoints endpoints, Bundle bundle, Long payerId) {
     List<MethodOutcome> importOutcomes = bundle.getEntry()
-        .stream()
+        .parallelStream()
         .map(Bundle.BundleEntryComponent::getResource)
         .map(resource -> importResource(endpoints.getTargetClient(), resource, payerId))
         .collect(Collectors.toList());
@@ -76,7 +80,9 @@ public class ResourceImporter {
           .next(bundle)
           .execute();
 
-      importOutcomes.addAll(importBundle(endpoints, nextPage, payerId));
+      if (nextPage != null) {
+        importOutcomes.addAll(importBundle(endpoints, nextPage, payerId));
+      }
     }
     return importOutcomes;
   }

@@ -7,7 +7,7 @@
 .el-form-item__label {
 	line-height: $global-form-line-height;
 	font-weight: $global-font-weight-normal;
-	color: $global-text-muted-color;
+	color: $grey;
 }
 
 .el-form--label-top .el-form-item__label {
@@ -16,13 +16,13 @@
 
 .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label,
 .el-form-item.is-required:not(.is-no-asterisk) .el-form-item__label-wrap > .el-form-item__label {
-	&:before {
+	&::before {
 		display: none;
 	}
 
-	&:after {
+	&::after {
 		content: "*";
-		color: #F56C6C;
+		color: #f56c6c;
 		margin-left: 4px;
 	}
 }

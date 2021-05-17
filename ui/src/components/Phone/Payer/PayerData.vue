@@ -1,12 +1,19 @@
 <script lang="ts">
-import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
+import { defineComponent, ref, computed, watch } from "vue";
 import PayerHeader from "./PayerHeader.vue";
 import CollapseGroup from "@/components/Phone/CollapseGroup.vue";
 import ResourceList from "@/components/Phone/ResourceList.vue";
 import ProgressScreen from "../ProgressScreen.vue";
 import CustomDialogWithClose from "../CustomDialogWithClose.vue";
-import Mappings from "../../../utils/resourceMappings";
+import Mappings from "@/utils/resourceMappings";
+import { PatientModule } from "@/store/modules/patient";
+import { PayerModule } from "@/store/modules/payer";
+import { PayersModule } from "@/store/modules/payers";
+import { CallsModule } from "@/store/modules/calls";
+import _ from "@/vendors/lodash";
+import { goToImportOrHome, showDefaultErrorNotification } from "@/utils/utils";
+import router from "@/router";
+import PayerRefreshToolbar from "@/components/Phone/PayerRefreshToolbar.vue";
 
 export default defineComponent({
 	components: {
@@ -14,7 +21,8 @@ export default defineComponent({
 		CollapseGroup,
 		PayerHeader,
 		ProgressScreen,
-		CustomDialogWithClose
+		CustomDialogWithClose,
+		PayerRefreshToolbar
 	},
 	props: {
 		id: {
@@ -22,64 +30,107 @@ export default defineComponent({
 			required: true
 		}
 	},
-	data(){
-		return {
-			showConfirm: false,
-			isRemoving: false
+	setup(props) {
+		const payerId = computed(() => props.id);
+
+		const activePayer = computed(() => PayersModule.activePayer);
+
+		watch(activePayer, payer => {
+			if (payer) {
+				PatientModule.getPatient({ payerId: payer.id, patientId: payer.sourcePatientId! });
+				PayerModule.getResourcesOverview(payer.id);
+			}
+		}, { immediate: true });
+
+
+		const mappedPatient = computed<{ [key: string]: { label: string, value: string } } | null>(() => PatientModule.patient ? Mappings.Patient.convert(PatientModule.patient) : null);
+
+		const omitPatientName = (patientInfo: object): object => _.omit(patientInfo, "name");
+
+		const showRemovalConfirm = ref<boolean>(false);
+		const removeInProgress = ref<boolean>(false);
+		const removalPercentage = computed<number>(() => PayerModule.progressStatus?.type === "CLEAR" ? PayerModule.progressPercentage : 0);
+		const removePayerData = async () => {
+			removeInProgress.value = true;
+			showRemovalConfirm.value = false;
+			const progress = await PayerModule.removePayerData(activePayer.value!.id);
+
+			if (progress.status === "FAILED") {
+				showDefaultErrorNotification();
+			}
+
+			if (progress.status === "COMPLETED") {
+				CallsModule.clearPreviousCallList();
+
+				setTimeout(async () => {
+					await PayersModule.loadPayers();
+					await goToImportOrHome();
+				}, 1000);
+			}
 		};
-	},
-	computed: {
-		...mapGetters([
-			"resourcesOverview",
-			"patient",
-			"activePayer",
-			"activePayerId"
-		]),
-		mappedPatient() {
-			if (this.patient) {
-				return Mappings.Patient.convert(this.patient);
+
+		const goToResource = (resourceType: string) => {
+			router.push(`/payer/${payerId.value}/${resourceType}`);
+		};
+
+		const resourcesOverview = computed(() => PayerModule.supportedResourcesOverview);
+
+		const refreshInProgress = computed<boolean>(() => PayerModule.importProgress?.type === "REFRESH" || false);
+		const refreshPercentage = computed<number>(() => refreshInProgress.value ? PayerModule.progressPercentage : 0);
+
+		const showingImportOverview = ref(false);
+		watch(refreshInProgress, async inProgress => {
+			if (!inProgress) {
+				await PayersModule.loadPayers();
+				showImportOverview(true);
 			}
-		}
-	},
-	watch: {
-		activePayer() {
-			if (this.activePayer) {
-				this.getPatientInfo();
+		});
+
+		const showImportOverview = (show: boolean) => {
+			showingImportOverview.value = show;
+			if (show) {
+				PayerModule.getImportOverview(activePayer.value!);
 			}
-		}
-	},
-	created() {
-		this.getPatientInfo();
-		this.getResourcesOverview();
-	},
-	methods: {
-		removePayerData() {
-			this.showConfirm = false;
-			this.isRemoving = true;
-			this.$store.dispatch("removePayerData", this.activePayerId)
-				.then(() => {
-					this.$store.dispatch("changeServerLastImportedDate", { id: this.activePayerId, lastImported: null });
-					this.$router.push("/");
-				});
-		},
-		getPatientInfo() {
-			if (this.activePayer.sourcePatientId) {
-				this.$store.dispatch("getPatientInfo", { payerId: this.activePayerId, patientId: this.activePayer.sourcePatientId });
+		};
+		const importOverview = computed(() => PayerModule.importOverview || []);
+		const totalImportOverview = computed<{ createdCount: number, updatedCount: number }>(() =>
+			importOverview.value.reduce((acc, item) => ({
+				createdCount: acc.createdCount + item.createdCount,
+				updatedCount: acc.updatedCount + item.updatedCount
+			}), { createdCount: 0, updatedCount: 0 })
+		);
+
+		const refresh = async () => {
+			if (!activePayer.value) {
+				return;
 			}
-		},
-		getResourcesOverview() {
-			this.$store.dispatch("getResourcesOverview", this.activePayerId);
-		},
-		goToResource(resourceType){
-			this.$router.push(`/payer/${this.id}/${resourceType}`);
-		},
-		//
-		// To avoid patient name duplication
-		//
-		omitPatientName(patientInfo) {
-			const { name, ...patientInfoWithoutName } = patientInfo;
-			return patientInfoWithoutName;
-		}
+
+			try {
+				await PayerModule.refreshPayerData(activePayer.value);
+			} catch {
+				showDefaultErrorNotification();
+				PayerModule.setPayerAuthInProgress(false);
+			}
+		};
+
+		return {
+			activePayer,
+			goToResource,
+			removeInProgress,
+			removalPercentage,
+			removePayerData,
+			showRemovalConfirm,
+			mappedPatient,
+			omitPatientName,
+			resourcesOverview,
+			refreshInProgress,
+			refreshPercentage,
+			showingImportOverview,
+			showImportOverview,
+			importOverview,
+			totalImportOverview,
+			refresh
+		};
 	}
 });
 </script>
@@ -90,29 +141,28 @@ export default defineComponent({
 		class="payer"
 	>
 		<PayerHeader
-			:class="{'eclipse': isRemoving }"
+			:class="{'eclipse': removeInProgress }"
 			:title="activePayer.name"
-			@showRemovePayerDialog="showConfirm = true"
+			:actions-disabled="refreshInProgress"
+			@show-remove-payer-dialog="showRemovalConfirm = true"
 		/>
 		<div
-			v-if="!isRemoving"
+			v-if="!removeInProgress"
+			class="line"
+		></div>
+		<div
+			v-if="!removeInProgress"
 			class="scroll-area"
 		>
-			<div class="sub-header">
-				<span>
-					Last Import: {{ $filters.formatDate(activePayer.lastImported) }}
-				</span>
-				<div class="action-wrap">
-					<van-button
-						:icon="require('@/assets/images/time-icon.svg')"
-						size="mini"
-					/>
-					<van-button
-						:icon="require('@/assets/images/refresh.svg')"
-						size="mini"
-					/>
-				</div>
-			</div>
+			<PayerRefreshToolbar
+				:refresh-in-progress="refreshInProgress"
+				:refresh-percentage="refreshPercentage"
+				:showing-import-overview="showingImportOverview"
+				:import-overview="totalImportOverview"
+				:last-imported="activePayer.lastImported"
+				@refresh="refresh"
+				@update:showing-import-overview="showImportOverview"
+			/>
 
 			<h2 class="section-header">
 				GENERAL INFO
@@ -160,6 +210,7 @@ export default defineComponent({
 			<ResourceList
 				v-if="resourcesOverview.length > 0"
 				:resources="resourcesOverview"
+				:import-overview="showingImportOverview ? importOverview : null"
 				@click-resource="goToResource"
 			/>
 			<div
@@ -175,19 +226,22 @@ export default defineComponent({
 				</div>
 			</div>
 		</div>
+
 		<CustomDialogWithClose
-			:show="showConfirm"
+			:show="showRemovalConfirm"
 			title="Are you sure?"
 			show-cancel-button
 			confirm-button-text="Delete"
 			cancel-button-text="Cancel"
-			@cancel="showConfirm = false"
+			@cancel="showRemovalConfirm = false"
 			@confirm="removePayerData"
 		>
 			Once you confirm, imported payer data will be permanently deleted.
 		</CustomDialogWithClose>
+
 		<ProgressScreen
-			v-if="isRemoving"
+			v-if="removeInProgress"
+			:percentage="removalPercentage"
 			title="Clear Data in progress"
 			description="Please wait, it may take a few seconds to delete all your information."
 		/>
@@ -205,13 +259,18 @@ export default defineComponent({
 	flex-direction: column;
 	height: 100%;
 
+	.line {
+		background-color: $black-russian;
+		height: 20px;
+	}
+
 	.scroll-area {
 		overflow-y: overlay;
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 
-		& > * {
+		> * {
 			flex-shrink: 0;
 		}
 	}
@@ -228,7 +287,7 @@ export default defineComponent({
 		.icon {
 			color: $pinkish-grey;
 
-			@include icon("~@/assets/images/no-data.svg", 100px);
+			@include mask-icon("~@/assets/images/no-data.svg", 100px);
 		}
 
 		.primary {
@@ -249,25 +308,8 @@ export default defineComponent({
 	opacity: .2;
 }
 
-.sub-header {
-	background-color: $mirage;
-	padding: $global-margin $global-margin-large;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	border-top: 1px solid $platinum;
-	border-bottom: 1px solid $platinum;
-	margin-top: $global-margin-medium;
-	font-size: $global-font-size;
-	font-weight: $global-font-weight-normal;
-
-	.action-wrap {
-		display: flex;
-
-		::v-deep(.van-button:last-child) {
-			margin-left: $global-margin;
-		}
-	}
+::v-deep(.van-overlay) {
+	backdrop-filter: blur(3px);
 }
 
 .section-header {
@@ -300,10 +342,6 @@ export default defineComponent({
 
 .patient-title {
 	padding: 13px 0;
-}
-
-::v-deep(.van-overlay) {
-	backdrop-filter: blur(3px);
 }
 
 .no-data {

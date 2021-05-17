@@ -6,14 +6,17 @@
 }
 
 .el-collapse-item__header {
-	background: $global-background-gray;
 	padding: $global-margin-medium;
-	font-size: $global-medium-font-size;
+	font-size: $global-font-size;
 	flex-direction: row-reverse;
 	justify-content: flex-end;
 	line-height: $global-line-height-small;
 
 	@include dont-break-out();
+
+	&.is-active {
+		border-bottom-color: $global-base-border-color;
+	}
 }
 
 .el-collapse-item__wrap {

@@ -13,6 +13,7 @@ export default class ResourceLoader {
 		this._searches = searches;
 		this._batchSize = batchSize;
 		this._currentSearchIdx = 0;
+		this._nextUrl = null;
 		this.loading = false;
 		this.results = Object.fromEntries(Object.keys(searches).map(key => [key, []]));
 		this.meta = Object.fromEntries(Object.keys(searches).map(key => [key, {}]));

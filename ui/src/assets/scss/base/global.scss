@@ -41,6 +41,7 @@ svg {
 
 ::-webkit-scrollbar {
 	width: 5px;
+	height: 5px;
 	background-color: $white-smoke;
 	border-radius: 10px;
 }
@@ -52,4 +53,8 @@ svg {
 
 [class*='van-hairline']::after {
 	display: none;
+}
+
+.highlight-text {
+	background: $global-search-highlight-color;
 }

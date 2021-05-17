@@ -1,39 +1,44 @@
 <script lang="ts">
-import { defineComponent, nextTick } from "vue";
+import { computed, defineComponent, nextTick, ref, watch } from "vue";
 import ServerForm from "./ServerForm.vue";
 import NoServers from "./NoServers.vue";
+import { Payer } from "@/types";
+import { PayersModule } from "@/store/modules/payers";
 
 export default defineComponent({
-	name: "Servers",
 	components: { NoServers, ServerForm },
-	data() {
-		return {
-			showAddServerForm: false,
-			activeServers: "",
-			hasUnsavedChanges: false
-		};
-	},
-	computed: {
-		servers() {
-			return this.$store.getters.servers;
-		}
-	},
-	watch: {
-		servers(val, oldVal) {
+	emits: ["back-to-calls"],
+	setup(_, { emit }) {
+		const showAddServerForm = ref<boolean>(false);
+		const activeServers = ref<number | null>(null);
+		const hasUnsavedChanges = ref<boolean>(false);
+
+		const servers = computed<Payer[]>(() => PayersModule.payers);
+
+		watch(servers, (val, oldVal) => {
 			if (val.length > oldVal.length) {
-				nextTick(() => this.activeServers = val[val.length - 1].id);
+				nextTick(() => activeServers.value = val[val.length - 1].id);
 			}
-		},
-		showAddServerForm() {
-			if (this.showAddServerForm) {
-				this.collapseSection();
+		});
+		watch(showAddServerForm, val => {
+			if (val) {
+				collapseSection();
 			}
-		}
-	},
-	methods: {
-		collapseSection() {
-			this.activeServers = "";
-		}
+		});
+
+		const collapseSection = (): void => {
+			activeServers.value = null;
+		};
+		const backToCalls = (): void => emit("back-to-calls");
+
+		return {
+			showAddServerForm,
+			activeServers,
+			hasUnsavedChanges,
+			servers,
+			collapseSection,
+			backToCalls
+		};
 	}
 });
 </script>
@@ -44,13 +49,24 @@ export default defineComponent({
 			<h2 class="title">
 				Manage Servers
 			</h2>
-			<el-button
-				v-if="servers.length || showAddServerForm"
-				:disabled="showAddServerForm || hasUnsavedChanges"
-				@click="showAddServerForm = true"
-			>
-				Add New Server
-			</el-button>
+			<div>
+				<el-button
+					v-if="servers.length || showAddServerForm"
+					size="small"
+					:disabled="showAddServerForm || hasUnsavedChanges"
+					@click="showAddServerForm = true"
+				>
+					Add New Server
+				</el-button>
+				<el-button
+					v-if="servers.length"
+					size="small"
+					:disabled="showAddServerForm || hasUnsavedChanges"
+					@click="backToCalls"
+				>
+					Back to FHIR Requests
+				</el-button>
+			</div>
 		</div>
 		<div class="content">
 			<el-collapse
@@ -102,13 +118,14 @@ $form-left-right-padding: $global-margin-medium + 24px; // 24 px - size of el-co
 .header {
 	background: $global-background-gray;
 	border-bottom: $global-base-border;
-	padding: $global-margin-small $form-left-right-padding $global-margin-small $global-margin-medium;
+	padding: $global-margin-small $global-margin-medium;
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 
 	.title {
-		font-size: $global-medium-font-size;
-		font-weight: $global-font-weight-medium;
+		font-size: $global-font-size;
+		font-weight: $global-font-weight-normal;
 		margin: $global-margin-small 0;
 	}
 }
