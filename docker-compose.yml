@@ -1,0 +1,8 @@
+version: '3'
+services:
+  pdex-patient-import-ui:
+    build: .
+    container_name: pdex-patient-import-ui
+    restart: on-failure
+    ports:
+      - 8443:8443

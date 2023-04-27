@@ -460,3 +460,5 @@ yarn-error.log*
 # Project specific ignores
 /api/src/main/resources/static/**/*
 ui/node/**/*
+patient-ui-db.mv.db
+patient-ui-db.trace.db
